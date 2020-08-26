@@ -3,6 +3,7 @@ body {
     background-image: url('/assets/images/spotify-logo.png');
     background-position: 0 0;
     background-repeat: no-repeat;
+    background-size: contain;
 }
 
 audio {
@@ -13,6 +14,10 @@ audio {
 #login,
 #loggedin {
     display: none;
+}
+
+#user-profile {
+    color: #fff;
 }
 
 .text-overflow {
