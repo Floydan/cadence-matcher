@@ -1,0 +1,29 @@
+{
+  "name": "cadence-matcher",
+  "version": "1.0.0",
+  "description": "cadens song bpm matcher",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Floydan/cadence-matcher.git"
+  },
+  "author": "Joakim Höglund",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Floydan/cadence-matcher/issues"
+  },
+  "homepage": "https://github.com/Floydan/cadence-matcher#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "querystring": "^0.2.0",
+    "request": "^2.88.2"
+  }
+}
