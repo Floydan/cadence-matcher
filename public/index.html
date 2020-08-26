@@ -4,74 +4,7 @@
 <head>
     <title>Running cadence song matcher</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-    <style type="text/css">
-        #login,
-        #loggedin {
-            display: none;
-        }
-
-        .text-overflow {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 500px;
-        }
-
-        .tracks {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin: -2rem -1rem;
-        }
-
-        .track {
-            padding: 1rem;
-            margin: 2rem 1rem;
-            width: 31%;
-            height: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border: 1px solid olive;
-            border-radius: 1rem;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .track h4,
-        .track h5 {
-            margin-top: 0;
-        }
-
-        .track .track-bg {
-            position: absolute;
-            height: 100%;
-            right: -15rem;
-            opacity: 0.4;
-            top: 0;
-            z-index: 1;
-        }
-
-        .track .track-info {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .track .track-info .details {
-            flex: 1 auto;
-        }
-
-        .track .track-info .album-image {
-            margin-right: 1rem;
-        }
-
-        .track .player {
-            position: relative;
-            z-index: 3;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/styles/site.css">
 </head>
 
 <body>
@@ -82,29 +15,31 @@
         </div>
         <div id="loggedin">
             <div id="user-profile"></div>
-            <div class="form form-inline search">
-                <div class="form-group">
-                    <label for="minBpm">Min. BPM</label>
-                    <input type="number" id="minBpm" value="125" class="form-control" />
+            <div class="panel search-panel">
+                <div class="form form-inline">
+                    <div class="form-group">
+                        <label for="minBpm">Min. BPM</label>
+                        <input type="number" id="minBpm" value="125" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="targetBpm">Target BPM</label>
+                        <input type="number" id="targetBpm" value="130" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="maxBpm">Max. BPM</label>
+                        <input type="number" id="maxBpm" value="140" class="form-control" />
+                    </div>
+                    <button class="btn btn-info" id="searchBtn">
+                        Find Recommendations
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="targetBpm">Target BPM</label>
-                    <input type="number" id="targetBpm" value="130" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label for="maxBpm">Max. BPM</label>
-                    <input type="number" id="maxBpm" value="140" class="form-control" />
-                </div>
-                <button class="btn btn-info" id="searchBtn">
-                    Find Recommendations
-                </button>
-            </div>
 
-            <div class="form-group playlists-container">
-                <label for="playlists">Playlists</label>
-                <select id="playlists" class="form-control">
-                    <option>Select a playlist to add songs to...</option>
-                </select>
+                <div class="form-group playlists-container">
+                    <label for="playlists">Playlists</label>
+                    <select id="playlists" class="form-control">
+                        <option>Select a playlist to add songs to...</option>
+                    </select>
+                </div>
             </div>
 
             <div class="tracks"></div>
@@ -137,12 +72,6 @@
                 {{href}}
               </a>
             </dd>
-            <dt>Profile Image</dt>
-            <dd class="clearfix">
-              <a href="{{images.0.url}}">
-                {{images.0.url}}
-              </a>
-            </dd>
             <dt>Country</dt>
             <dd>{{country}}</dd>
           </dl>
@@ -170,184 +99,30 @@
             </div>
           </div>
         </div>
-        <div class="player">
-          {{#if preview_url}}
-          <audio controls>
-            <source src="{{preview_url}}" type="audio/mpeg" />
-          </audio>
-          {{else}}
-          <em>
-            Preview missing...
-          </em>
-          {{/if}}
-          <div>
+        <div>
+            <div class="player">
+            {{#if preview_url}}
+            <audio controls>
+                <source src="{{preview_url}}" type="audio/mpeg" />
+            </audio>
+            {{else}}
+            <em>
+                Preview missing...
+            </em>
+            {{/if}}
+            </div>
+            <div class="actions">
             <button class="btn btn-success addToPlaylistBtn" data-trackuri="{{uri}}">
-              Add to playlist
+                Add to playlist
             </button>
-          </div>
+            </div>
         </div>
       </div>
     </script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script>
-        (function () {
-            /**
-             * Obtains parameters from the hash of the URL
-             * @return Object
-             */
-            function getHashParams() {
-                var hashParams = {};
-                var e,
-                    r = /([^&;=]+)=?([^&;]*)/g,
-                    q = window.location.hash.substring(1);
-                while ((e = r.exec(q))) {
-                    hashParams[e[1]] = decodeURIComponent(e[2]);
-                }
-                return hashParams;
-            }
-
-            function getPlaylists() {
-                $.ajax({
-                    url: "/playlists",
-                    headers: {
-                        accessToken: access_token
-                    },
-                    dataType: "json",
-                }).done(function (result) {
-                    for (var p in result.items) {
-                        var playlist = result.items[p];
-                        $("#playlists").append(
-                            $("<option>", {
-                                text: playlist.name,
-                                value: playlist.id
-                            })
-                        );
-                    }
-                });
-            }
-
-            function getRecommendations() {
-                $.ajax({
-                    url: "/recommendations",
-                    headers: {
-                        accessToken: access_token
-                    },
-                    data: {
-                        minBpm: $("#minBpm").val(),
-                        targetBpm: $("#targetBpm").val(),
-                        maxBpm: $("#maxBpm").val(),
-                    },
-                    dataType: "json",
-                }).done(function (result) {
-                    var tracks = [];
-                    for (var t in result.tracks) {
-                        var track = result.tracks[t];
-
-                        track.artists = track.artists.map((a) => a.name).join(", ");
-                        track.duration = parseMilliseconds(track.duration_ms); //TODO: parse duration_ms
-                        track.albumImage = track.album.images[2].url;
-
-                        tracks.push(trackTemplate(track));
-                    }
-
-                    tracksPlaceholder.append(tracks);
-
-                    var players = document.getElementsByTagName("audio");
-                    for (var p in players) {
-                        players[p].volume = 0.4;
-                    }
-
-                    $(".addToPlaylistBtn")
-                        .off("click")
-                        .on("click", function (e) {
-                            addTrackToPlaylist($(e.target));
-                        });
-                });
-            }
-
-            function parseMilliseconds(millisec) {
-                var seconds = (millisec / 1000).toFixed(0);
-                var minutes = Math.floor(seconds / 60);
-                var hours = "";
-                if (minutes > 59) {
-                    hours = Math.floor(minutes / 60);
-                    hours = hours >= 10 ? hours : "0" + hours;
-                    minutes = minutes - hours * 60;
-                    minutes = minutes >= 10 ? minutes : "0" + minutes;
-                }
-
-                seconds = Math.floor(seconds % 60);
-                seconds = seconds >= 10 ? seconds : "0" + seconds;
-                if (hours != "") {
-                    return hours + ":" + minutes + ":" + seconds;
-                }
-                return minutes + ":" + seconds;
-            }
-
-            function addTrackToPlaylist(button) {
-                var playlistId = $("#playlists").val();
-                $.ajax({
-                    url: `/playlists/${playlistId}`,
-                    method: "POST",
-                    headers: {
-                        accessToken: access_token
-                    },
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        trackUri: button.data("trackuri"),
-                    }),
-                }).done(function (result) {
-                    button.text("Added").attr("disabled", true);
-                });
-            }
-
-            var userProfileSource = document.getElementById("user-profile-template")
-                .innerHTML,
-                userProfileTemplate = Handlebars.compile(userProfileSource),
-                userProfilePlaceholder = document.getElementById("user-profile");
-
-            var trackSource = document.getElementById("track-template").innerHTML,
-                trackTemplate = Handlebars.compile(trackSource),
-                tracksPlaceholder = $(".tracks");
-
-            var params = getHashParams();
-
-            var access_token = params.access_token,
-                refresh_token = params.refresh_token,
-                error = params.error;
-
-            if (error) {
-                alert("There was an error during the authentication");
-            } else {
-                if (access_token) {
-                    $.ajax({
-                        url: "https://api.spotify.com/v1/me",
-                        headers: {
-                            Authorization: "Bearer " + access_token,
-                        },
-                        success: function (response) {
-                            userProfilePlaceholder.innerHTML = userProfileTemplate(
-                                response
-                            );
-
-                            $("#login").hide();
-                            $("#loggedin").show();
-                        },
-                    });
-
-                    getPlaylists();
-
-                    $("#searchBtn").on("click", getRecommendations);
-                } else {
-                    // render initial screen
-                    $("#login").show();
-                    $("#loggedin").hide();
-                }
-            }
-        })();
-    </script>
+    <script src="/assets/scripts/site.js"></script>
 </body>
 
 </html>

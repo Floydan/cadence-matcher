@@ -1,0 +1,103 @@
+body {
+    background: #000;
+    background-image: url('/assets/images/spotify-logo.png');
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}
+
+audio {
+    display: block;
+    width: 100%;
+}
+
+#login,
+#loggedin {
+    display: none;
+}
+
+.text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 500px;
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
+    padding: 1rem;
+}
+
+.search-panel {
+    margin-top: 3rem;
+}
+
+.search-panel .form-group {
+    margin-right: 1rem;
+}
+
+.playlists-container {
+    margin-top: 2rem;
+}
+
+.tracks {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: -2rem -1rem;
+}
+
+.track {
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
+    padding: 1rem;
+    margin: 2rem 1rem;
+    width: 31%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid olive;
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.track h4,
+.track h5 {
+    margin-top: 0;
+}
+
+.track .track-bg {
+    position: absolute;
+    height: 100%;
+    right: -15rem;
+    opacity: 0.4;
+    top: 0;
+    z-index: 1;
+}
+
+.track .track-info {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+}
+
+.track .track-info .details {
+    flex: 1 auto;
+}
+
+.track .track-info .album-image {
+    margin-right: 1rem;
+}
+
+.track .player {
+    position: relative;
+    z-index: 3;
+}
+
+.track .actions {
+    margin-top: 1rem;
+}
