@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     width: 100%;
     height: 100%;
 }
@@ -9,6 +10,7 @@ body {
     background-position: -30vw -20vh;
     background-repeat: no-repeat;
     background-size: contain;
+    padding-bottom: 3rem;
 }
 
 audio {
@@ -19,6 +21,10 @@ audio {
 #login,
 #loggedin {
     display: none;
+}
+
+#login {
+    color: #fff;
 }
 
 #user-profile {

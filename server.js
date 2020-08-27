@@ -162,6 +162,13 @@ app.get('/playlists', function (req, res) {
     request.get(options, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
         }
     })
 });
@@ -170,20 +177,31 @@ app.get('/recommendations', function (req, res) {
     const accessToken = req.headers.accesstoken;
     const min_tempo = req.query.minBpm,
         max_tempo = req.query.maxBpm,
-        target_tempo = req.query.targetBpm,
-        genres = req.query.genres || 'edm,dance,techno,hardstyle';
+        target_tempo = req.query.targetBpm;
+    let genres = req.query.genres; //|| 'edm,dance,techno,hardstyle'
 
+    let query = {
+        limit: 50,
+        offset: 0,
+        market: 'SE',
+        min_tempo,
+        max_tempo,
+        target_tempo
+    };
+
+    if (genres && genres.length !== 0) {
+        if (genres.length > 5) {
+            let newGenres = [];
+            for (var i = 0; i < 5; i++) {
+                newGenres.push(genres[i]);
+            }
+            genres = newGenres;
+        }
+        query.seed_genres = genres.join(',');
+    }
 
     var options = {
-        url: `https://api.spotify.com/v1/recommendations?${querystring.stringify({
-            limit: 50,
-            offset: 0,
-            market: 'SE',
-            seed_genres: genres,
-            min_tempo,
-            max_tempo,
-            target_tempo
-        })}`,
+        url: `https://api.spotify.com/v1/recommendations?${querystring.stringify(query)}`,
         headers: {
             'Authorization': `Bearer ${accessToken}`
         },
@@ -193,6 +211,13 @@ app.get('/recommendations', function (req, res) {
     request.get(options, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
         }
     })
 });
@@ -215,6 +240,13 @@ app.post('/playlists/:id', function (req, res) {
     request.post(options, function (error, response, body) {
         if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
             res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
         }
     })
 

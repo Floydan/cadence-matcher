@@ -34,17 +34,61 @@
         });
     }
 
+    function getGenres() {
+        $.ajax({
+            url: "https://api.spotify.com/v1/recommendations/available-genre-seeds",
+            headers: {
+                Authorization: "Bearer " + access_token,
+            },
+            success: function (response) {
+                var genres = response.genres;
+                for (var g in genres) {
+                    var genre = genres[g];
+                    $("#genres").append(
+                        $("<option>", {
+                            text: genre,
+                            value: genre
+                        })
+                    );
+                }
+
+                setFilters();
+            }
+        });
+    }
+
+    function setFilters() {
+        var filters = localStorage.getItem('filters');
+        if (!filters) return;
+
+        var filtersParsed = JSON.parse(filters);
+        $("#minBpm").val(filtersParsed.minBpm);
+        $("#targetBpm").val(filtersParsed.targetBpm);
+        $("#maxBpm").val(filtersParsed.maxBpm);
+        $('#genres').val(filtersParsed.genres);
+    }
+
     function getRecommendations() {
+        var data = {
+            minBpm: $("#minBpm").val(),
+            targetBpm: $("#targetBpm").val(),
+            maxBpm: $("#maxBpm").val(),
+            genres: $('#genres').val()
+        };
+
+        if (!data.genres || data.genres.length === 0) {
+            alert('You have to select atleast 1 genre');
+            return;
+        }
+
+        localStorage.setItem('filters', JSON.stringify(data));
+
         $.ajax({
             url: "/recommendations",
             headers: {
                 accessToken: access_token
             },
-            data: {
-                minBpm: $("#minBpm").val(),
-                targetBpm: $("#targetBpm").val(),
-                maxBpm: $("#maxBpm").val(),
-            },
+            data: data,
             dataType: "json",
         }).done(function (result) {
             var tracks = [];
@@ -57,7 +101,7 @@
 
                 tracks.push(trackTemplate(track));
             }
-
+            tracksPlaceholder.empty();
             tracksPlaceholder.append(tracks);
 
             var players = document.getElementsByTagName("audio");
@@ -94,6 +138,11 @@
 
     function addTrackToPlaylist(button) {
         var playlistId = $("#playlists").val();
+
+        if (!playlistId || playlistId.length === 0) {
+            alert("You have to select a playlist first");
+            return;
+        }
         $.ajax({
             url: `/playlists/${playlistId}`,
             method: "POST",
@@ -141,9 +190,13 @@
                     $("#login").hide();
                     $("#loggedin").show();
                 },
+                error: function () {
+                    window.location = '/';
+                }
             });
 
             getPlaylists();
+            getGenres();
 
             $("#searchBtn").on("click", getRecommendations);
         } else {

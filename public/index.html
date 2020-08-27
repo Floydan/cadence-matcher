@@ -2,52 +2,66 @@
 <html>
 
 <head>
-    <title>Running cadence song matcher</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/assets/styles/site.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="x-ua-compatible" content="IE=Edge" />
+  <title>Running cadence song matcher</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/styles/site.css">
 </head>
 
 <body>
-    <div class="container">
-        <div id="login">
-            <h1>Running cadence song matcher</h1>
-            <a href="/login" class="btn btn-primary">Log in with Spotify</a>
-        </div>
-        <div id="loggedin">
-            <div id="user-profile"></div>
-            <div class="panel search-panel">
-                <div class="form form-inline">
-                    <div class="form-group">
-                        <label for="minBpm">Min. BPM</label>
-                        <input type="number" id="minBpm" value="125" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="targetBpm">Target BPM</label>
-                        <input type="number" id="targetBpm" value="130" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="maxBpm">Max. BPM</label>
-                        <input type="number" id="maxBpm" value="140" class="form-control" />
-                    </div>
-                    <button class="btn btn-info" id="searchBtn">
-                        Find Recommendations
-                    </button>
-                </div>
-
-                <div class="form-group playlists-container">
-                    <label for="playlists">Playlists</label>
-                    <select id="playlists" class="form-control">
-                        <option>Select a playlist to add songs to...</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="tracks"></div>
-        </div>
+  <div class="container">
+    <div id="login">
+      <h1>Running cadence song matcher</h1>
+      <p>
+        Sign in using spotify and start finding songs that have to right BMP to match your target running cadence!
+      </p>
+      <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
+    <div id="loggedin">
+      <div id="user-profile"></div>
+      <div class="panel search-panel form">
+        <div class="form form-inline">
+          <div class="form-group">
+            <label for="minBpm">Min. BPM</label>
+            <input type="number" id="minBpm" value="125" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="targetBpm">Target BPM</label>
+            <input type="number" id="targetBpm" value="130" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="maxBpm">Max. BPM</label>
+            <input type="number" id="maxBpm" value="140" class="form-control" />
+          </div>
+        </div>
+        <div class="form">
 
-    <script id="user-profile-template" type="text/x-handlebars-template">
-        <h1>Logged in as {{display_name}}</h1>
+          <div class="form-group">
+            <label for="genres">Genres (max 5)</label>
+            <select id="genres" class="form-control" multiple required></select>
+          </div>
+
+          <div class="form-group playlists-container">
+            <label for="playlists">Playlists</label>
+            <select id="playlists" class="form-control">
+              <option>Select a playlist to add songs to...</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-info" style="margin-top: 2rem" id="searchBtn">
+          Find Recommendations
+        </button>
+      </div>
+
+      <div class="tracks"></div>
+    </div>
+  </div>
+
+  <script id="user-profile-template" type="text/x-handlebars-template">
+    <h1>Logged in as {{display_name}}</h1>
       <div class="media">
         <div class="pull-left">
           <img class="media-object" width="150" src="{{images.0.url}}" />
@@ -79,8 +93,8 @@
       </div>
     </script>
 
-    <script id="track-template" type="text/x-handlebars-template">
-        <div class="track">
+  <script id="track-template" type="text/x-handlebars-template">
+    <div class="track">
         <img class="track-bg" src="/assets/images/spotify-logo.png" />
         <div class="track-info">
           <div class="album-image">
@@ -120,9 +134,9 @@
       </div>
     </script>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="/assets/scripts/site.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+  <script src="/assets/scripts/site.js"></script>
 </body>
 
 </html>
