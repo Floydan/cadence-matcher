@@ -31,6 +31,19 @@ audio {
     color: #fff;
 }
 
+.in-progress {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+    animation: in-progress-stripes 2s linear infinite;
+    animation-name: in-progress-stripes;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: infinite;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+}
+
 .text-overflow {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -129,3 +142,21 @@ audio {
 .track .actions {
     margin-top: 1rem;
 }
+
+
+@-webkit-keyframes in-progress-stripes {
+    from {
+      background-position: 40px 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }
+  @keyframes in-progress-stripes {
+    from {
+      background-position: 40px 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }

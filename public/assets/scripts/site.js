@@ -83,6 +83,8 @@
 
         localStorage.setItem('filters', JSON.stringify(data));
 
+        $('#searchBtn').addClass('in-progress');
+
         $.ajax({
             url: "/recommendations",
             headers: {
@@ -90,7 +92,12 @@
             },
             data: data,
             dataType: "json",
-        }).done(function (result) {
+        })
+        .error(function() {
+            
+            tracksPlaceholder.empty();
+        })
+        .done(function (result) {
             var tracks = [];
             for (var t in result.tracks) {
                 var track = result.tracks[t];
@@ -114,6 +121,9 @@
                 .on("click", function (e) {
                     addTrackToPlaylist($(e.target));
                 });
+        })
+        .always(function() {
+            $('#searchBtn').removeClass('in-progress');
         });
     }
 
@@ -139,10 +149,12 @@
     function addTrackToPlaylist(button) {
         var playlistId = $("#playlists").val();
 
-        if (!playlistId || playlistId.length === 0) {
+        if (!playlistId || playlistId.length === 0 || playlistId.indexOf('Select ') !== -1) {
             alert("You have to select a playlist first");
             return;
         }
+
+        button.addClass('in-progress');
         $.ajax({
             url: `/playlists/${playlistId}`,
             method: "POST",
@@ -155,6 +167,9 @@
             }),
         }).done(function (result) {
             button.text("Added").attr("disabled", true);
+        })
+        .always(function() {
+            button.removeClass('in-progress');
         });
     }
 
