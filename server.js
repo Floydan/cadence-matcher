@@ -33,7 +33,7 @@ var stateKey = 'spotify_auth_state';
 
 var app = express();
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/dist'))
     .use(cors())
     .use(bodyParser.json())
     .use(cookieParser());
@@ -122,8 +122,8 @@ app.get('/callback', function (req, res) {
 app.get('/refresh_token', function (req, res) {
 
     // requesting access token from refresh token
-    var refresh_token = req.query.refresh_token;
-    var authOptions = {
+    const refresh_token = req.query.refresh_token;
+    const authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
             'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
@@ -137,9 +137,13 @@ app.get('/refresh_token', function (req, res) {
 
     request.post(authOptions, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-            var access_token = body.access_token;
+            const access_token = body.access_token;
+            let new_refresh_token = body.refresh_token;
+            if(!new_refresh_token)
+                new_refresh_token = refresh_token;
             res.send({
-                'access_token': access_token
+                'access_token': access_token,
+                'refresh_token': new_refresh_token
             });
         }
     });
@@ -190,14 +194,7 @@ app.get('/recommendations', function (req, res) {
     };
 
     if (genres && genres.length !== 0) {
-        if (genres.length > 5) {
-            let newGenres = [];
-            for (var i = 0; i < 5; i++) {
-                newGenres.push(genres[i]);
-            }
-            genres = newGenres;
-        }
-        query.seed_genres = genres.join(',');
+        query.seed_genres = [...genres].slice(0, 5).join(',');
     }
 
     var options = {

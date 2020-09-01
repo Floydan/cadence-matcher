@@ -6,7 +6,7 @@ body {
 
 body {
     background: #000;
-    background-image: url('/assets/images/spotify-logo.png');
+    background-image: url('../images/spotify-logo.png');
     background-position: -30vw -20vh;
     background-repeat: no-repeat;
     background-size: contain;
@@ -16,11 +16,6 @@ body {
 audio {
     display: block;
     width: 100%;
-}
-
-#login,
-#loggedin {
-    display: none;
 }
 
 #login {
@@ -59,11 +54,12 @@ audio {
 
 .search-panel {
     margin-top: 3rem;
+    
+    .form-group {
+        margin-right: 1rem;
+    }
 }
 
-.search-panel .form-group {
-    margin-right: 1rem;
-}
 
 .playlists-container {
     margin-top: 2rem;
@@ -83,7 +79,7 @@ audio {
     padding: 1rem;
     margin: 2rem 1rem;
     width: 100%;
-    height: 250px;
+    height: 260px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -93,70 +89,72 @@ audio {
     position: relative;
 }
 
-@media only screen and (min-width: 767px) {
-    .track {
+
+.track {
+
+    @media only screen and (min-width: 767px) {
         width: 47%;
     }
-}
 
-@media only screen and (min-width: 1024px) {
-    .track {
+    @media only screen and (min-width: 1024px) {
         width: 31%;
     }
-}
 
-.track h4,
-.track h5 {
-    margin-top: 0;
-}
+    h4,
+    h5 {
+        margin-top: 0;
+    }
 
-.track .track-bg {
-    position: absolute;
-    height: 100%;
-    right: -15rem;
-    opacity: 0.4;
-    top: 0;
-    z-index: 1;
-}
+    .track-bg {
+        position: absolute;
+        height: 100%;
+        right: -15rem;
+        opacity: 0.4;
+        top: 0;
+        z-index: 1;
+    }
 
-.track .track-info {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    justify-content: space-between;
-}
+    .track-info {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
 
-.track .track-info .details {
-    flex: 1 auto;
-}
+        .details {
+            flex: 1 auto;
+        }
 
-.track .track-info .album-image {
-    margin-right: 1rem;
-}
+        .album-image {
+            margin-right: 1rem;
+        }
+    }
 
-.track .player {
-    position: relative;
-    z-index: 3;
-}
+    .player {
+        position: relative;
+        z-index: 3;
+    }
 
-.track .actions {
-    margin-top: 1rem;
+    .actions {
+        margin-top: 1rem;
+    }
 }
-
 
 @-webkit-keyframes in-progress-stripes {
     from {
-      background-position: 40px 0;
+        background-position: 40px 0;
     }
+
     to {
-      background-position: 0 0;
+        background-position: 0 0;
     }
-  }
-  @keyframes in-progress-stripes {
+}
+
+@keyframes in-progress-stripes {
     from {
-      background-position: 40px 0;
+        background-position: 40px 0;
     }
+
     to {
-      background-position: 0 0;
+        background-position: 0 0;
     }
-  }
+}
