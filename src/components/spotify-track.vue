@@ -30,7 +30,7 @@
           class="btn btn-success"
           v-on:click="addToPlaylist($event)"
           v-bind:data-trackuri="track.uri"
-          v-bind:class="{addInProgress: 'in-progress'}"
+          v-bind:class="{'in-progress': addInProgress}"
           v-bind:disabled="addDisabled"
         >Add to playlist</button>
       </div>
@@ -39,32 +39,32 @@
 </template>
 
 <script>
-import Spotify from '../spotify'
+import SpotifyService from "../services/spotifyService";
 export default {
-    props: ['track'],
-    data: function() {
-        return {
-            addInProgress: false,
-            addDisabled: false,
-        }
+  props: ["track"],
+  data: function () {
+    return {
+      addInProgress: false,
+      addDisabled: false,
+    };
+  },
+  methods: {
+    async addToPlaylist(evt) {
+      evt.preventDefault();
+
+      this.addInProgress = true;
+      var response = await SpotifyService.addTrackToPlaylist(
+        this.$attrs.accesstoken,
+        this.$attrs.playlistid,
+        this.$props.track.uri
+      );
+      this.addInProgress = false;
+
+      this.addDisabled = response;
     },
-    methods: {
-        async addToPlaylist(evt) {
-            evt.preventDefault();
-
-            this.addInProgress = true;
-            var response = await Spotify.addTrackToPlaylist(this.$attrs.accesstoken, this.$attrs.playlistid, this.$props.track.uri);
-            this.addInProgress = false;
-
-            this.addDisabled = response;
-        }
-    }
+  },
 };
 </script>
 
 <style scoped>
-p {
-  font-size: 2em;
-  text-align: center;
-}
 </style>

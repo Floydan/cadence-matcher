@@ -53,7 +53,8 @@
           </div>
         </div>
 
-        <button class="btn btn-info" style="margin-top: 2rem" id="searchBtn" v-on:click="getRecommendations()">
+        <button class="btn btn-info" style="margin-top: 2rem" id="searchBtn" v-on:click="getRecommendations()"
+          v-bind:class="{'in-progress': searchInProgress}">
           Find Recommendations
         </button>
       </div>

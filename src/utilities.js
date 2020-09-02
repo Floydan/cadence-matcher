@@ -37,23 +37,4 @@ export default class Utilities {
         }
         return minutes + ':' + seconds;
     }
-
-    /**
-     * stores the filters in localStorage
-     * @return void
-     */
-    static setFilters(filters) {
-        localStorage.setItem('filters', JSON.stringify(filters));
-    }
-
-    /**
-     * retrieves the filters from localStorage
-     * @return Object
-     */
-    static getFilters() {
-        var filters = localStorage.getItem('filters');
-        if(!filters) return {};
-
-        return JSON.parse(filters);
-    }
 }

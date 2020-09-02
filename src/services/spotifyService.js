@@ -1,7 +1,8 @@
-import Utilites from './utilities';
+import Utilites from '../utilities';
 import axios from 'axios';
+import StorageService from './storageService'
 
-export default class Spotify {
+export default class SpotifyService {
     /**
      * Obtains a new access token using a refresh token 
      * @return Promise
@@ -81,7 +82,7 @@ export default class Spotify {
             return Promise.reject('You have to select atleast 1 genre');
         }
 
-        Utilites.setFilters(data);
+        StorageService.setFilters(data);
 
         const response = await axios.get('/recommendations', {
             headers: {
