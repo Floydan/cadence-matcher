@@ -31,8 +31,8 @@
           v-on:click="addToPlaylist($event)"
           v-bind:data-trackuri="track.uri"
           v-bind:class="{'in-progress': addInProgress}"
-          v-bind:disabled="addDisabled"
-        >Add to playlist</button>
+          v-bind:disabled="addDisabled || inPlaylist"
+        >{{(inPlaylist ? 'Already added' : addDisabled ? 'Added' : 'Add to playlist')}}</button>
       </div>
     </div>
   </div>
@@ -41,12 +41,31 @@
 <script>
 import SpotifyService from "../services/spotifyService";
 export default {
-  props: ["track"],
+  name: "spotify-track",
+  props: {
+    track: Object,
+    playlistTracks: Array,
+  },
   data: function () {
     return {
       addInProgress: false,
       addDisabled: false,
+      inPlaylist: false,
     };
+  },
+  watch: {
+    playlistTracks: function (newVal, oldVal) {
+      const tracks = this.playlistTracks.find(
+        (t) => t.track.id === this.track.id
+      );
+      this.inPlaylist = tracks && tracks.length !== 0;
+    },
+  },
+  mounted: function () {
+    const tracks = this.playlistTracks.find(
+      (t) => t.track.id === this.track.id
+    );
+    this.inPlaylist = tracks && tracks.length !== 0;
   },
   methods: {
     async addToPlaylist(evt) {
@@ -56,7 +75,7 @@ export default {
       var response = await SpotifyService.addTrackToPlaylist(
         this.$attrs.accesstoken,
         this.$attrs.playlistid,
-        this.$props.track.uri
+        this.track.uri
       );
       this.addInProgress = false;
 

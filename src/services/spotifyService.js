@@ -109,6 +109,30 @@ export default class SpotifyService {
      * Adds a track to a playlist
      * @return Promise
      */
+    static async getPlaylistTracks(
+        accessToken,
+        playlistId
+    ) {
+        if (!playlistId || playlistId.length === 0) {
+            alert('You have to select a playlist first');
+            return [];
+        }
+
+        var response = await axios.get(`/playlists/${playlistId}`, {
+            headers: {
+                accessToken: accessToken
+            },
+        });
+
+        if (response.status === 200 || response.status === 201)
+            return response.data.items;
+        return [];
+    }
+
+    /**
+     * Adds a track to a playlist
+     * @return Promise
+     */
     static async addTrackToPlaylist(
         accessToken,
         playlistId,
@@ -124,7 +148,7 @@ export default class SpotifyService {
         }, {
             headers: {
                 accessToken: accessToken
-            }
+            },
         });
 
         if (response.status === 200 || response.status === 201)

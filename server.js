@@ -12,8 +12,6 @@ const port = process.env.PORT,
     clientSecret = process.env.CLIENT_SECRET,
     redirectUri = process.env.REDIRECT_URI;
 
-console.log(process.env);
-
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -235,6 +233,37 @@ app.post('/playlists/:id', function (req, res) {
     };
 
     request.post(options, function (error, response, body) {
+        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
+            res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
+        }
+    })
+
+});
+
+
+app.get('/playlists/:id', function (req, res) {
+    const accessToken = req.headers.accesstoken;
+    const playlistId = req.params.id,
+        trackUri = req.body.trackUri;
+
+    var options = {
+        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?${querystring.stringify({
+            uris: trackUri
+        })}`,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+        json: true
+    };
+
+    request.get(options, function (error, response, body) {
         if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
             res.send(body);
         } else {

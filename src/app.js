@@ -15,6 +15,7 @@ var app = new Vue({
     data: {
         loggedIn: false,
         tracks: [],
+        playlistTracks: [],
         searchFilter: {
             minBpm: 125,
             targetBpm: 130,
@@ -33,8 +34,12 @@ var app = new Vue({
     methods: {
         async getRecommendations() {
             this.searchInProgress = true;
-            this.tracks = await SpotifyService.getRecommendations(this.accessToken, this.searchFilter)
+            this.tracks = await SpotifyService.getRecommendations(this.accessToken, this.searchFilter);
             this.searchInProgress = false;
+        },
+        async getPlaylistTracks() {
+            if(!this.selectedPlaylistId) return;
+            this.playlistTracks = await SpotifyService.getPlaylistTracks(this.accessToken, this.selectedPlaylistId);
         }
     },
     components: {

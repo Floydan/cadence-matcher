@@ -46,7 +46,7 @@
 
           <div class="form-group playlists-container">
             <label for="playlists">Playlists</label>
-            <select id="playlists" class="form-control" v-model="selectedPlaylistId">
+            <select id="playlists" class="form-control" v-model="selectedPlaylistId" v-on:change="getPlaylistTracks()">
               <option value="">Select a playlist to add songs to...</option>
               <option v-for="playlist in playlists" v-bind:value="playlist.id">{{playlist.name}}</option>
             </select>
@@ -60,7 +60,7 @@
       </div>
 
       <div class="tracks">
-        <spotify-track v-for="track in tracks" v-bind:track="track" v-bind:key="track.id"
+        <spotify-track v-for="track in tracks" :track="track" :playlist-tracks="playlistTracks" v-bind:key="track.id"
           v-bind:playlistId="selectedPlaylistId" v-bind:accessToken="accessToken">
         </spotify-track>
       </div>

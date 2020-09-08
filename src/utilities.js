@@ -37,4 +37,8 @@ export default class Utilities {
         }
         return minutes + ':' + seconds;
     }
+
+    static calculatePercentage(loaded, total) {
+        return Math.floor((loaded * 1.0) / total);
+    }
 }

@@ -31,6 +31,7 @@
 
 <script>
 export default {
+    name: 'user-card',
     props: ['user']
 }
 </script>
