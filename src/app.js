@@ -1,12 +1,16 @@
+
+import 'vue-slider-component/theme/default.css';
 import './sass/main.scss'
 
 import Vue from 'vue'
-import spotifyTrack from './components/spotify-track.vue'
-import userCard from './components/user-card.vue'
-import SpotifyService from './services/spotifyService'
 import Utilities from './utilities';
 import StorageService from './services/storageService'
 import axios from 'axios';
+
+import spotifyTrack from './components/spotify-track.vue'
+import userCard from './components/user-card.vue'
+import SpotifyService from './services/spotifyService'
+import VueSlider from 'vue-slider-component';
 
 const delay = (duration) => new Promise(resolve => setTimeout(resolve, duration));
 
@@ -17,10 +21,14 @@ var app = new Vue({
         tracks: [],
         playlistTracks: [],
         searchFilter: {
-            minBpm: 125,
-            targetBpm: 130,
-            maxBpm: 140,
-            genres: []
+            tempo: [120, 140, 160],
+            genres: [],
+            energy: [0.0, 1.0],
+            acousticness: [0.0, 1.0],
+            danceability: [0.0, 1.0],
+            instrumentalness: [0.0, 1.0],
+            liveness: [0.0, 1.0],
+            valence: [0.0, 1.0]
         },
         access_token: '',
         refresh_token: '',
@@ -42,11 +50,23 @@ var app = new Vue({
             this.playlistTracks = await SpotifyService.getPlaylistTracks(this.accessToken, this.selectedPlaylistId);
         }
     },
+    watch: {
+        'searchFilter.targetBpm': function(newVal, oldVal) {
+            this.searchFilter.minBpm = newVal - 5;
+            this.searchFilter.maxBpm = newVal + 5;
+        }
+    },
     components: {
         userCard,
         spotifyTrack,
+        VueSlider
     },
     beforeMount: async function () {
+        let filtersTest = StorageService.getFilters();
+        if(filtersTest && !filtersTest.tempo) {
+            StorageService.setFilters(this.searchFilter);
+        }
+
         var params = Utilities.getHashParams();
         this.accessToken = params.access_token;
         this.refreshToken = params.refresh_token;

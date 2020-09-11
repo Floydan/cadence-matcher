@@ -58,9 +58,9 @@ app.get('/callback', function (req, res) {
     // your application requests refresh and access tokens
     // after checking the state parameter
 
-    var code = req.query.code || null;
-    var state = req.query.state || null;
-    var storedState = req.cookies ? req.cookies[stateKey] : null;
+    let code = req.query.code || null;
+    let state = req.query.state || null;
+    let storedState = req.cookies ? req.cookies[stateKey] : null;
 
     if (state === null || state !== storedState) {
         res.redirect('/#' +
@@ -69,7 +69,8 @@ app.get('/callback', function (req, res) {
             }));
     } else {
         res.clearCookie(stateKey);
-        var authOptions = {
+        const auth = clientId + ':' + clientSecret;
+        const authOptions = {
             url: 'https://accounts.spotify.com/api/token',
             form: {
                 code: code,
@@ -77,7 +78,7 @@ app.get('/callback', function (req, res) {
                 grant_type: 'authorization_code'
             },
             headers: {
-                'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+                'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
             },
             json: true
         };
@@ -85,10 +86,10 @@ app.get('/callback', function (req, res) {
         request.post(authOptions, function (error, response, body) {
             if (!error && response.statusCode === 200) {
 
-                var access_token = body.access_token,
+                const access_token = body.access_token,
                     refresh_token = body.refresh_token;
 
-                var options = {
+                const options = {
                     url: 'https://api.spotify.com/v1/me',
                     headers: {
                         'Authorization': 'Bearer ' + access_token
@@ -97,9 +98,9 @@ app.get('/callback', function (req, res) {
                 };
 
                 // use the access token to access the Spotify Web API
-                request.get(options, function (error, response, body) {
-                    console.log(body);
-                });
+                // request.get(options, function (error, response, body) {
+                    
+                // });
 
                 // we can also pass the token to the browser to make requests from there
                 res.redirect('/#' +
@@ -121,10 +122,11 @@ app.get('/refresh_token', function (req, res) {
 
     // requesting access token from refresh token
     const refresh_token = req.query.refresh_token;
+    const auth = clientId + ':' + clientSecret;
     const authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
-            'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+            'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
         },
         form: {
             grant_type: 'refresh_token',
@@ -177,18 +179,34 @@ app.get('/playlists', function (req, res) {
 
 app.get('/recommendations', function (req, res) {
     const accessToken = req.headers.accesstoken;
-    const min_tempo = req.query.minBpm,
-        max_tempo = req.query.maxBpm,
-        target_tempo = req.query.targetBpm;
+    const energy = req.query.energy,
+        acousticness = req.query.acousticness,
+        danceability = req.query.danceability,
+        instrumentalness = req.query.instrumentalness,
+        liveness = req.query.liveness,
+        valence = req.query.valence;
+    const tempo = req.query.tempo;
+
     let genres = req.query.genres; //|| 'edm,dance,techno,hardstyle'
 
     let query = {
-        limit: 50,
-        offset: 0,
+        limit: 100,
         market: 'SE',
-        min_tempo,
-        max_tempo,
-        target_tempo
+        min_tempo: Number(tempo[0]),
+        target_tempo: Number(tempo[1]),
+        max_tempo: Number(tempo[2]),
+        min_energy: Number(energy[0]),
+        max_energy: Number(energy[1]),
+        min_acousticness: Number(acousticness[0]),
+        max_acousticness: Number(acousticness[1]),
+        min_danceability: Number(danceability[0]),
+        max_danceability: Number(danceability[1]),
+        min_instrumentalness: Number(instrumentalness[0]),
+        max_instrumentalness: Number(instrumentalness[1]),
+        min_liveness: Number(liveness[0]),
+        max_liveness: Number(liveness[1]),
+        min_valence: Number(valence[0]),
+        max_valence: Number(valence[1])
     };
 
     if (genres && genres.length !== 0) {

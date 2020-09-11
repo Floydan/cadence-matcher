@@ -86,7 +86,8 @@ module.exports = {
                             return path.relative(path.dirname(resourcePath), context).substr(6);
                         },
                         publicPath: '/',
-                        userRelativePaths: true
+                        userRelativePaths: true,
+                        esModule: false,
                     }
                 }]
             },

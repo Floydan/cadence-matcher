@@ -7,13 +7,27 @@ export default class StorageService {
         minBpm,
         targetBpm,
         maxBpm,
-        genres
+        tempo,
+        genres,
+        energy,
+        acousticness,
+        danceability,
+        instrumentalness,
+        liveness,
+        valence
     }) {
         localStorage.setItem('filters', JSON.stringify({
             minBpm,
             targetBpm,
             maxBpm,
-            genres
+            tempo,
+            genres,
+            energy,
+            acousticness,
+            danceability,
+            instrumentalness,
+            liveness,
+            valence
         }));
     }
 

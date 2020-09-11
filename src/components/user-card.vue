@@ -31,11 +31,15 @@
 
 <script>
 export default {
-    name: 'user-card',
-    props: ['user']
-}
+  name: "user-card",
+  props: ["user"],
+};
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.user-profile {
+  h1 {
+    font-family: Roboto, sans-serif;
+  }
+}
 </style>

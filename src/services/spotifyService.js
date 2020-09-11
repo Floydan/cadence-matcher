@@ -68,13 +68,27 @@ export default class SpotifyService {
             minBpm,
             targetBpm,
             maxBpm,
-            genres
+            tempo,
+            genres,
+            energy,
+            acousticness,
+            danceability,
+            instrumentalness,
+            liveness,
+            valence
         }) {
         var data = {
             minBpm,
             targetBpm,
             maxBpm,
-            genres
+            tempo,
+            genres,
+            energy,
+            acousticness,
+            danceability,
+            instrumentalness,
+            liveness,
+            valence
         };
 
         if (!data.genres || data.genres.length === 0) {
