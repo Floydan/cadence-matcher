@@ -8,120 +8,12 @@
   <title>Running cadence song matcher</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
   <link
-        href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-        rel="stylesheet" />
+    href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet" />
 </head>
 
 <body>
   <div class="container" id="app">
-    <div id="login" v-if="!loggedIn">
-      <h1>Running cadence song matcher</h1>
-      <p>
-        Sign in using spotify and start finding songs that have to right BMP to match your target running cadence!
-      </p>
-      <a href="/login" class="btn btn-primary">Log in with Spotify</a>
-    </div>
-    <div id="loggedin" v-if="loggedIn">
-      <user-card v-bind:user="user"></user-card>
-      <div class="panel search-panel form">
-        <!-- <div class="form form-inline">
-          <div class="form-group">
-            <label for="minBpm">Min. BPM</label>
-            <input type="number" id="minBpm" v-bind:value="searchFilter.minBpm" class="form-control" />
-          </div>
-          <div class="form-group">
-            <label for="targetBpm">Target BPM</label>
-            <input type="number" id="targetBpm" v-bind:value="searchFilter.targetBpm" class="form-control" />
-          </div>
-          <div class="form-group">
-            <label for="maxBpm">Max. BPM</label>
-            <input type="number" id="maxBpm" v-bind:value="searchFilter.maxBpm" class="form-control" />
-          </div>
-        </div> -->
-        
-        <div>
-          <div>
-            <b>Target Tempo [min, target, max] BPM:</b> {{searchFilter.tempo}}
-          </div>
-          <vue-slider v-model="searchFilter.tempo" :min="10.0" :max="300.0" :interval="5" :marks="true" :hide-label="true"></vue-slider>
-        </div>
-        <div class="sliders">
-          <div>
-            <div>
-              <b>Energy:</b> {{searchFilter.energy}}
-            </div>
-            <vue-slider v-model="searchFilter.energy" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-          
-          <div>
-            <div>
-              <b>Acousticness:</b> {{searchFilter.acousticness}}
-            </div>
-            <vue-slider v-model="searchFilter.acousticness" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-          
-          <div>
-            <div>
-              <b>Danceability:</b> {{searchFilter.danceability}}
-            </div>
-            <vue-slider v-model="searchFilter.danceability" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-          
-          <div>
-            <div>
-              <b>Instrumentalness:</b> {{searchFilter.instrumentalness}}
-            </div>
-            <vue-slider v-model="searchFilter.instrumentalness" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-          
-          <div>
-            <div>
-              <b>Liveness:</b> {{searchFilter.liveness}}
-            </div>
-            <vue-slider v-model="searchFilter.liveness" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-          
-          <div>
-            <div>
-              <b>Valence:</b> {{searchFilter.valence}}
-            </div>
-            <vue-slider v-model="searchFilter.valence" :min="0.0" :max="1.0" :interval="0.1" :marks="true" :hide-label="true"></vue-slider>
-          </div>
-        </div>
-        <div class="form">
-
-          <div class="form-group">
-            <label for="genres">Genres (max 5) (Selected: {{searchFilter.genres.length}})</label>
-            <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
-              <option v-for="genre in genres" v-bind:value="genre">{{genre}}</option>
-            </select>
-            <div>
-              <i v-for="genre in searchFilter.genres">{{genre}} &nbsp;</i>
-            </div>
-          </div>
-
-          <div class="form-group playlists-container">
-            <label for="playlists">Playlists</label>
-            <select id="playlists" class="form-control" v-model="selectedPlaylistId" v-on:change="getPlaylistTracks()">
-              <option value="">Select a playlist to add songs to...</option>
-              <option v-for="playlist in playlists" v-bind:value="playlist.id">{{playlist.name}}</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn btn-info" style="margin-top: 2rem" id="searchBtn" v-on:click="getRecommendations()"
-          v-bind:class="{'in-progress': searchInProgress}">
-          Find Recommendations
-        </button>
-      </div>
-
-      <div class="tracks">
-        <spotify-track v-for="track in tracks" :track="track" :playlist-tracks="playlistTracks" v-bind:key="track.id"
-          v-bind:playlistId="selectedPlaylistId" v-bind:accessToken="accessToken">
-        </spotify-track>
-      </div>
-    </div>
-  </div>
   </div>
 
 </body>

@@ -8,7 +8,7 @@ dotenv.config();
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-    entry: ['./src/app.js'],
+    entry: ['./src/main.js'],
     output: {
         filename: isDevelopment ? '[name].js' : '[name].[hash].js',
         path: path.resolve(__dirname, 'dist'),

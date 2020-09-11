@@ -1,5 +1,5 @@
 <template>
-  <div id="user-profile">
+  <div id="user-profile" v-if="user && user.display_name">
     <h1>Logged in as {{user.display_name}}</h1>
     <div class="media">
       <div class="pull-left">
