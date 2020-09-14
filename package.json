@@ -4,7 +4,7 @@
   "description": "cadence song bpm matcher",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"no test specified\"",
     "start": "node server.js",
     "build": "npm run webpack",
     "dev": "concurrently \"npx nodemon\" \"npx webpack --watch\"",
