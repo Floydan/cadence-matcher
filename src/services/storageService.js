@@ -58,7 +58,6 @@ export default class StorageService {
         }));
     }
 
-
     /**
      * retrieves the access tokens and expiration from localStorage
      * @return Object
@@ -68,5 +67,13 @@ export default class StorageService {
         if (!tokens) return {};
 
         return JSON.parse(tokens);
+    }
+
+    /**
+     * retrieves the access tokens and expiration from localStorage
+     * @return void
+     */
+    static clearTokens() {
+        localStorage.removeItem('tokens');
     }
 }

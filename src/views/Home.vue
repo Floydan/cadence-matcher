@@ -95,11 +95,12 @@
       </div>
       <div class="form">
         <div class="form-group">
-          <label for="genres">Genres (max 5) (Selected: {{searchFilter.genres.length}})</label>
+          <label for="genres">Genres (max 5)</label>
           <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
             <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
           </select>
           <div>
+            <b>Selected ({{searchFilter.genres.length}}): </b>
             <i v-for="genre in searchFilter.genres" v-bind:key="genre">{{genre}} &nbsp;</i>
           </div>
         </div>
@@ -271,18 +272,19 @@ export default {
     }
 
     if (Date.now() > this.tokenExpiresAt) {
-      SpotifyService.getNewAccessToken(this.refreshToken).then((response) => {
-        this.accessToken = response.data.access_token;
-        this.refreshToken = response.data.refresh_token;
+      const tokenResponse = await SpotifyService.getNewAccessToken(
+        this.refreshToken
+      );
+      this.accessToken = tokenResponse.data.access_token;
+      this.refreshToken = tokenResponse.data.refresh_token;
 
-        now = new Date().setTime(new Date().getTime() + 3600 * 1000);
-        this.tokenExpiresAt = new Date(now);
+      now = new Date().setTime(new Date().getTime() + 3600 * 1000);
+      this.tokenExpiresAt = new Date(now);
 
-        StorageService.setTokens({
-          accessToken: this.accessToken,
-          refreshToken: this.refreshToken,
-          expire: tokens.expire,
-        });
+      StorageService.setTokens({
+        accessToken: this.accessToken,
+        refreshToken: this.refreshToken,
+        expire: tokens.expire,
       });
     }
 
@@ -298,32 +300,14 @@ export default {
         ...this.searchFilter,
         ...StorageService.getFilters(),
       };
-    } else if (userResponse.status === 401) {
-      if (this.refreshToken) {
-        const response = await SpotifyService.getNewAccessToken(
-          this.refreshToken
-        );
+    } else {
+      this.$router.push("login");
+      this.accessToken = "";
+      this.refreshToken = "";
+      this.user = {};
+      StorageService.clearTokens();
 
-        if (response.status === 200) {
-          this.accessToken = response.data.access_token;
-          this.refreshToken = response.data.refresh_token;
-
-          var now = new Date().setTime(new Date().getTime() + 3600 * 1000);
-          this.tokenExpiresAt = new Date(now);
-
-          StorageService.setTokens({
-            accessToken: this.accessToken,
-            refreshToken: this.refreshToken,
-            expire: this.tokenExpiresAt,
-          });
-        }
-      } else {
-        this.accessToken = "";
-        this.refreshToken = "";
-        this.user = {};
-
-        this.$router.push("login");
-      }
+      this.$router.push("login");
     }
   },
 };

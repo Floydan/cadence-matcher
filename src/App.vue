@@ -1,6 +1,9 @@
 <template>
-  <div class="container" id="app">
-    <router-view />
+  <div id="app">
+    <nav-bar></nav-bar>
+    <div class="container">
+      <router-view />
+    </div>
   </div>
 </template>
 
