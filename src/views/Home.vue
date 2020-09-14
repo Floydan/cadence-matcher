@@ -137,9 +137,9 @@
         v-for="track in tracks"
         :track="track"
         :playlist-tracks="playlistTracks"
-        v-bind:key="track.id"
-        v-bind:playlistId="selectedPlaylistId"
-        v-bind:accessToken="accessToken"
+        :playlist-id="selectedPlaylistId"
+        :access-token="accessToken"
+        :key="track.id"
       ></spotify-track>
     </div>
   </div>

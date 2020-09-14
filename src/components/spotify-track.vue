@@ -45,6 +45,8 @@ export default {
   props: {
     track: Object,
     playlistTracks: Array,
+    playlistId: String,
+    accessToken: String,
   },
   data: function () {
     return {
@@ -73,8 +75,8 @@ export default {
 
       this.addInProgress = true;
       var response = await SpotifyService.addTrackToPlaylist(
-        this.$attrs.accesstoken,
-        this.$attrs.playlistid,
+        this.accessToken,
+        this.playlistId,
         this.track.uri
       );
       this.addInProgress = false;
