@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "build": "npx webpack --mode production",
-    "dev": "concurrently \"npx nodemon\" \"npx webpack --watch\""
+    "build": "npm run webpack",
+    "dev": "concurrently \"npx nodemon\" \"npx webpack --watch\"",
+    "webpack": "node_modules/.bin/webpack"
   },
   "repository": {
     "type": "git",

@@ -2,7 +2,7 @@
   <div id="user-profile" v-if="user && user.display_name">
     <h1>Logged in as {{user.display_name}}</h1>
     <div class="media">
-      <div class="pull-left">
+      <div class="pull-left" v-if="user.images && user.images.length > 0">
         <img class="media-object" width="150" v-bind:src="user.images['0'].url" />
       </div>
       <div class="media-body">

@@ -4,6 +4,9 @@
     <div class="container">
       <router-view />
     </div>
+    <footer>
+      <div class="container">&copy; Copyright Joakim Höglund {{year}}</div>
+    </footer>
   </div>
 </template>
 
@@ -28,4 +31,9 @@ export default {
 </script>
 
 <style lang="scss">
+footer {
+  margin-top: 10rem;
+  padding-bottom: 5rem;
+  color: #fff;
+}
 </style>

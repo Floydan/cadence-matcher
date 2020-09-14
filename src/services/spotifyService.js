@@ -93,7 +93,7 @@ export default class SpotifyService {
 
         if (!data.genres || data.genres.length === 0) {
             alert('You have to select atleast 1 genre');
-            return Promise.reject('You have to select atleast 1 genre');
+            return [];
         }
 
         StorageService.setFilters(data);
