@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"no test specified\"",
     "start": "node server.js",
-    "build": "npm run webpack",
+    "build": "npx webpack --mode production",
     "dev": "concurrently \"npx nodemon\" \"npx webpack --watch\"",
     "webpack": "node_modules/.bin/webpack"
   },
