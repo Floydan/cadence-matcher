@@ -14,6 +14,7 @@ module.exports = (env, argsv) => {
             path: path.resolve(__dirname, 'dist'),
         },
         mode: argsv.mode !== 'production' ? 'development' : 'production',
+        devtool: argsv.mode !== 'production' ? 'source-map' : '',
         optimization: {
             moduleIds: 'hashed',
             runtimeChunk: 'single',
@@ -36,9 +37,8 @@ module.exports = (env, argsv) => {
                 },
                 {
                     test: /\.scss$/,
-                    use: [{
-                            loader: "vue-style-loader",
-                        },
+                    use: [
+                        "vue-style-loader",
                         {
                             loader: MiniCssExtractPlugin.loader,
                             options: {
@@ -47,18 +47,8 @@ module.exports = (env, argsv) => {
                                 }
                             }
                         },
-                        {
-                            loader: "css-loader",
-                            options: {
-                                sourceMap: isDevelopment
-                            },
-                        },
-                        {
-                            loader: "sass-loader",
-                            options: {
-                                sourceMap: isDevelopment
-                            },
-                        }
+                        "css-loader",
+                        "sass-loader",
                     ]
                 },
                 // this will apply to both plain `.js` files
@@ -66,9 +56,6 @@ module.exports = (env, argsv) => {
                 {
                     test: /\.js$/,
                     loader: 'babel-loader',
-                    options: {
-                        sourceMap: isDevelopment
-                    },
                 },
                 // this will apply to both plain `.css` files
                 // AND `<style>` blocks in `.vue` files
