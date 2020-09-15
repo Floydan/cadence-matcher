@@ -8,11 +8,15 @@ export default class SpotifyService {
      * @return Promise
      */
     static async getNewAccessToken(refreshToken) {
-        return await axios.get('/refresh_token', {
-            params: {
-                refresh_token: refreshToken
-            }
-        });
+        try {
+            return await axios.get('/refresh_token', {
+                params: {
+                    refresh_token: refreshToken
+                }
+            });
+        } catch (err) {
+            throw new Error('Unable to refresh token');
+        }
     }
 
     /**
@@ -20,11 +24,15 @@ export default class SpotifyService {
      * @return Promise
      */
     static async getUser(accessToken, callback) {
-        return await axios.get('https://api.spotify.com/v1/me', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
+        try {
+            return await axios.get('https://api.spotify.com/v1/me', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+        } catch (err) {
+            throw new Error('Unable to get user data');
+        }
     }
 
     /**

@@ -134,12 +134,12 @@
 
     <div class="tracks">
       <spotify-track
-        v-for="track in tracks"
+        v-for="(track, i) in tracks"
         :track="track"
         :playlist-tracks="playlistTracks"
         :playlist-id="selectedPlaylistId"
         :access-token="accessToken"
-        :key="track.id"
+        :key="`${i}-${track.id}`"
       ></spotify-track>
     </div>
   </div>
@@ -250,6 +250,7 @@ export default {
 
     if (!this.accessToken || !this.refreshToken) {
       this.$router.push("login");
+      return;
     }
 
     // remove fragment as much as it can go without adding an entry in browser history:
