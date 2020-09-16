@@ -100,7 +100,7 @@
             <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
           </select>
           <div>
-            <b>Selected ({{searchFilter.genres.length}}): </b>
+            <b>Selected ({{searchFilter.genres.length}}):</b>
             <i v-for="genre in searchFilter.genres" v-bind:key="genre">{{genre}} &nbsp;</i>
           </div>
         </div>
@@ -123,13 +123,14 @@
         </div>
       </div>
 
-      <button
-        class="btn btn-info"
-        style="margin-top: 2rem"
-        id="searchBtn"
-        v-on:click="getRecommendations()"
-        v-bind:class="{'in-progress': searchInProgress}"
-      >Find Recommendations</button>
+      <progress-button
+        class="btn btn-success"
+        :button-style="'flip-open'"
+        :perspective="true"
+        :horizontal="true"
+        :vertical="false"
+        :action="getRecommendations"
+      >Find Recommendations</progress-button>
     </div>
 
     <div class="tracks">
@@ -150,6 +151,7 @@ import Utilities from "../utilities";
 import StorageService from "../services/storageService";
 import axios from "axios";
 
+import progressButton from "../components/progressButton.vue";
 import spotifyTrack from "../components/spotify-track.vue";
 import userCard from "../components/user-card.vue";
 import SpotifyService from "../services/spotifyService";
@@ -181,12 +183,13 @@ export default {
     };
   },
   methods: {
-    async getRecommendations() {
+    async getRecommendations(button) {
       this.searchInProgress = true;
       this.tracks = await SpotifyService.getRecommendations(
         this.accessToken,
         this.searchFilter
       );
+      if (button && button.stop) button.stop(this.tracks.length > 0 ? 1 : -1);
       this.searchInProgress = false;
     },
     async getPlaylistTracks() {
@@ -204,9 +207,10 @@ export default {
     },
   },
   components: {
-    userCard,
-    spotifyTrack,
-    VueSlider,
+    "user-card": userCard,
+    "spotify-track": spotifyTrack,
+    "vue-slider": VueSlider,
+    "progress-button": progressButton,
   },
   beforeCreate: function () {
     var params = Utilities.getHashParams();
@@ -285,29 +289,36 @@ export default {
       StorageService.setTokens({
         accessToken: this.accessToken,
         refreshToken: this.refreshToken,
-        expire: tokens.expire,
+        expire: this.tokenExpiresAt,
       });
     }
 
     setAxiosInterceptors(this, this.accessToken, this.refreshToken);
 
-    const userResponse = await SpotifyService.getUser(this.accessToken);
+    try {
+      const userResponse = await SpotifyService.getUser(this.accessToken);
 
-    if (userResponse.status === 200) {
-      this.user = userResponse.data;
-      this.playlists = await SpotifyService.getPlaylists(this.accessToken);
-      this.genres = await SpotifyService.getGenres(this.accessToken);
-      this.searchFilter = {
-        ...this.searchFilter,
-        ...StorageService.getFilters(),
-      };
-    } else {
-      this.$router.push("login");
+      if (userResponse.status === 200) {
+        this.user = userResponse.data;
+        this.playlists = await SpotifyService.getPlaylists(this.accessToken);
+        this.genres = await SpotifyService.getGenres(this.accessToken);
+        this.searchFilter = {
+          ...this.searchFilter,
+          ...StorageService.getFilters(),
+        };
+      } else {
+        this.accessToken = "";
+        this.refreshToken = "";
+        this.user = {};
+        StorageService.clearTokens();
+
+        this.$router.push("login");
+      }
+    } catch (err) {
       this.accessToken = "";
       this.refreshToken = "";
       this.user = {};
       StorageService.clearTokens();
-
       this.$router.push("login");
     }
   },
@@ -322,28 +333,30 @@ function setAxiosInterceptors(app, accessToken, refreshToken) {
       const originalRequest = error.config;
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        SpotifyService.getNewAccessToken(refreshToken).then((response) => {
-          app.accessToken = response.data.access_token;
-          app.refreshToken = response.data.refresh_token;
+        const response = await SpotifyService.getNewAccessToken(refreshToken);
+        app.accessToken = response.data.access_token;
+        app.refreshToken = response.data.refresh_token;
 
-          const now = new Date().setTime(new Date().getTime() + 3600 * 1000);
-          app.tokenExpiresAt = new Date(now);
+        const now = new Date().setTime(new Date().getTime() + 3600 * 1000);
+        app.tokenExpiresAt = new Date(now);
 
-          if (originalRequest.headers["Autorization"])
-            axios.defaults.headers.common[
-              "Authorization"
-            ] = `Bearer ${app.accessToken}`;
-          if (originalRequest.headers["accessToken"])
-            axios.defaults.headers.common["accessToken"] = app.accessToken;
+        if (originalRequest.headers["Autorization"]) {
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${app.accessToken}`;
+        }
 
-          StorageService.setTokens({
-            accessToken: app.accessToken,
-            refreshToken: app.refreshToken,
-            expire: app.expire,
-          });
+        if (originalRequest.headers["accessToken"]) {
+          axios.defaults.headers.common["accessToken"] = app.accessToken;
+        }
 
-          return axios(originalRequest);
+        StorageService.setTokens({
+          accessToken: app.accessToken,
+          refreshToken: app.refreshToken,
+          expire: app.tokenExpiresAt,
         });
+
+        return axios(originalRequest);
       }
 
       return Promise.reject(error);

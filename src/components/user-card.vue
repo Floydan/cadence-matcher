@@ -36,8 +36,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.user-profile {
+<style lang="scss" scoped>
+#user-profile {
   h1 {
     font-family: Roboto, sans-serif;
   }

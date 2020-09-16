@@ -19,7 +19,7 @@
         <div class="p">
           For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided.
           See tunable track attributes below for the list of available options. For example,
-          <pre>min_tempo=140</pre> would
+          <pre>min_tempo=140</pre>would
           restrict results to only those tracks with a tempo of greater than 140 beats per minute.
         </div>
       </li>
@@ -29,7 +29,7 @@
         <div class="p">
           For each tunable track attribute, a hard ceiling on the selected track attribute’s value can be provided.
           See tunable track attributes below for the list of available options. For example,
-          <pre>max_instrumentalness=0.35</pre> would filter out most tracks that are likely to be instrumental.
+          <pre>max_instrumentalness=0.35</pre>would filter out most tracks that are likely to be instrumental.
         </div>
       </li>
       <li>
@@ -39,7 +39,7 @@
           For each of the tunable track attributes (below) a target value may be provided.
           Tracks with the attribute values nearest to the target values will be preferred.
           For example, you might request
-          <pre>target_energy=0.6</pre> and
+          <pre>target_energy=0.6</pre>and
           <pre>target_danceability=0.8</pre>.
           All target values will be weighed equally in ranking results.
         </div>
@@ -107,6 +107,22 @@
         </p>
       </li>
     </ul>
+    <h4>Misc.</h4>
+    <p>
+      The non standard fonts used are
+      <b>'PT Sans'</b> and
+      <b>'Roboto'</b> and are supplied via
+      <a href="https://fonts.google.com/" target="_blank">Google Fonts</a>
+    </p>
+    <p>
+      The progress button is based on the
+      <a
+        href="https://tympanus.net/Development/ProgressButtonStyles/"
+        target="_blank"
+      >https://tympanus.net/Development/ProgressButtonStyles/</a>
+      <br />Which uses icons from
+      <a href="https://icomoon.io/" target="_blank">https://icomoon.io/</a>
+    </p>
   </div>
 </template>
 <script>

@@ -47,8 +47,18 @@ module.exports = (env, argsv) => {
                                 }
                             }
                         },
-                        "css-loader",
-                        "sass-loader",
+                        {
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: isDevelopment
+                            },
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: isDevelopment
+                            }
+                        }
                     ]
                 },
                 // this will apply to both plain `.js` files
@@ -56,6 +66,9 @@ module.exports = (env, argsv) => {
                 {
                     test: /\.js$/,
                     loader: 'babel-loader',
+                    options: {
+                        sourceMap: isDevelopment
+                    },
                 },
                 // this will apply to both plain `.css` files
                 // AND `<style>` blocks in `.vue` files
@@ -71,8 +84,18 @@ module.exports = (env, argsv) => {
                                 }
                             }
                         },
-                        'css-loader',
-                        'sass-loader'
+                        {
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: isDevelopment
+                            },
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: isDevelopment
+                            }
+                        }
                     ]
                 },
                 {
@@ -84,6 +107,21 @@ module.exports = (env, argsv) => {
                             context: path.resolve(__dirname, 'src'),
                             outputPath: (resourcePath, context) => {
                                 return path.relative(path.dirname(resourcePath), context).substr(6);
+                            },
+                            publicPath: '/',
+                            userRelativePaths: true,
+                            esModule: false,
+                        }
+                    }]
+                }, {
+                    test: /.(eot|svg|ttf|woff(2)?|otf)$/i,
+                    use: [{
+                        loader: 'file-loader',
+                        options: {
+                            name: '[path][name].[ext]',
+                            context: path.resolve(__dirname, 'src'),
+                            outputPath: (resourcePath, context) => {
+                                return path.relative(path.dirname(resourcePath), context).substr(9);
                             },
                             publicPath: '/',
                             userRelativePaths: true,
