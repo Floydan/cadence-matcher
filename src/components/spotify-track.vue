@@ -10,7 +10,7 @@
           <h4>{{track.name}}</h4>
           <h5>{{track.album.name}}</h5>
           <b>Artists</b>
-          <span>{{track.artists}}</span>
+          <small>{{track.artists}}</small>
         </div>
         <div>
           <b>Length</b>
@@ -92,7 +92,6 @@ export default {
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
   padding: 1rem;
-  margin: 2rem 1rem;
   width: 100%;
   height: 260px;
   display: flex;
@@ -102,6 +101,7 @@ export default {
   border-radius: 1rem;
   overflow: hidden;
   position: relative;
+  margin: 1rem 1rem 0 0;
 
   @media only screen and (min-width: 767px) {
     width: 47%;
@@ -114,6 +114,10 @@ export default {
   h4,
   h5 {
     margin-top: 0;
+  }
+
+  h4 {
+    font-size: 1.3em;
   }
 
   .track-bg {

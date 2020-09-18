@@ -126,7 +126,8 @@
           </select>
         </div>
       </div>
-
+    </div>
+    <div class="button-holder">
       <progress-button
         class
         :button-style="'flip-open'"
@@ -384,3 +385,5 @@ async function getUserData(accessToken) {
   }
 }
 </script>
+<style lang="scss" scoped>
+</style>

@@ -156,8 +156,8 @@ export default {
   letter-spacing: 1px;
   font-size: 1em;
   line-height: 4;
-  width: 100%;
   white-space: nowrap;
+  width: 100%;
 }
 
 .progress-button[disabled],
