@@ -87,5 +87,66 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.track {
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
+  padding: 1rem;
+  margin: 2rem 1rem;
+  width: 100%;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid olive;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+
+  @media only screen and (min-width: 767px) {
+    width: 47%;
+  }
+
+  @media only screen and (min-width: 1024px) {
+    width: 31%;
+  }
+
+  h4,
+  h5 {
+    margin-top: 0;
+  }
+
+  .track-bg {
+    position: absolute;
+    height: 100%;
+    right: -15rem;
+    opacity: 0.4;
+    top: 0;
+    z-index: 1;
+  }
+
+  .track-info {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+
+    .details {
+      flex: 1 auto;
+    }
+
+    .album-image {
+      margin-right: 1rem;
+    }
+  }
+
+  .player {
+    position: relative;
+    z-index: 3;
+  }
+
+  .actions {
+    margin-top: 1rem;
+  }
+}
 </style>

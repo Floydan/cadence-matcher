@@ -84,7 +84,8 @@ export default class SpotifyService {
             instrumentalness,
             liveness,
             valence
-        }) {
+        },
+        market) {
         var data = {
             minBpm,
             targetBpm,
@@ -96,7 +97,8 @@ export default class SpotifyService {
             danceability,
             instrumentalness,
             liveness,
-            valence
+            valence,
+            market
         };
 
         if (!data.genres || data.genres.length === 0) {

@@ -1,29 +1,13 @@
 <template>
   <div id="user-profile" v-if="user && user.display_name">
-    <h1>Logged in as {{user.display_name}}</h1>
     <div class="media">
-      <div class="pull-left" v-if="user.images && user.images.length > 0">
-        <img class="media-object" width="150" v-bind:src="user.images['0'].url" />
-      </div>
+      <img class="mr-2" width="100" v-bind:src="user.images['0'].url" />
       <div class="media-body">
-        <dl class="dl-horizontal">
-          <dt>Display name</dt>
-          <dd class="clearfix">{{user.display_name}}</dd>
-          <dt>Id</dt>
-          <dd>{{user.id}}</dd>
-          <dt>Email</dt>
-          <dd>{{user.email}}</dd>
-          <dt>Spotify URI</dt>
-          <dd>
-            <a v-bind:href="user.external_urls.spotify">{{user.external_urls.spotify}}</a>
-          </dd>
-          <dt>Link</dt>
-          <dd>
-            <a v-bind:href="user.href">{{user.href}}</a>
-          </dd>
-          <dt>Country</dt>
-          <dd>{{user.country}}</dd>
-        </dl>
+        <h1>{{user.display_name}}</h1>
+        <div class="text-truncate">{{user.email}}</div>
+        <div>
+          <img :src="`https://www.countryflags.io/${user.country}/flat/32.png`" />
+        </div>
       </div>
     </div>
   </div>
@@ -38,8 +22,15 @@ export default {
 
 <style lang="scss" scoped>
 #user-profile {
+  margin-top: 2rem;
+
   h1 {
     font-family: Roboto, sans-serif;
+    font-size: 1.8em;
+    margin-bottom: 0.1rem;
+  }
+  .media-body {
+    width: 57vw;
   }
 }
 </style>

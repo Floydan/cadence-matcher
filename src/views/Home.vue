@@ -1,7 +1,7 @@
 <template>
   <div id="loggedin">
     <user-card v-bind:user="user"></user-card>
-    <div class="panel search-panel form">
+    <div class="panel search-panel">
       <div>
         <b>Target Tempo [min, target, max] BPM:</b>
         {{searchFilter.tempo}}
@@ -95,13 +95,17 @@
       </div>
       <div class="form">
         <div class="form-group">
-          <label for="genres">Genres (max 5)</label>
+          <label for="genres">
+            <b>Genres (max 5):</b>
+          </label>
           <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
             <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
           </select>
           <div>
-            <b>Selected ({{searchFilter.genres.length}}):</b>
-            <i v-for="genre in searchFilter.genres" v-bind:key="genre">{{genre}} &nbsp;</i>
+            <small>
+              <i>Selected ({{searchFilter.genres.length}}):</i>
+              <i v-for="genre in searchFilter.genres" v-bind:key="genre">{{genre}} &nbsp;</i>
+            </small>
           </div>
         </div>
 
@@ -124,7 +128,7 @@
       </div>
 
       <progress-button
-        class="btn btn-success"
+        class
         :button-style="'flip-open'"
         :perspective="true"
         :horizontal="true"
@@ -187,7 +191,8 @@ export default {
       this.searchInProgress = true;
       this.tracks = await SpotifyService.getRecommendations(
         this.accessToken,
-        this.searchFilter
+        this.searchFilter,
+        this.user.country
       );
       if (button && button.stop) button.stop(this.tracks.length > 0 ? 1 : -1);
       this.searchInProgress = false;

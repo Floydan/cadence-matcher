@@ -99,7 +99,7 @@ app.get('/callback', function (req, res) {
 
                 // use the access token to access the Spotify Web API
                 // request.get(options, function (error, response, body) {
-                    
+
                 // });
 
                 // we can also pass the token to the browser to make requests from there
@@ -139,7 +139,7 @@ app.get('/refresh_token', function (req, res) {
         if (!error && response.statusCode === 200) {
             const access_token = body.access_token;
             let new_refresh_token = body.refresh_token;
-            if(!new_refresh_token)
+            if (!new_refresh_token)
                 new_refresh_token = refresh_token;
             res.send({
                 'access_token': access_token,
@@ -184,14 +184,15 @@ app.get('/recommendations', function (req, res) {
         danceability = req.query.danceability,
         instrumentalness = req.query.instrumentalness,
         liveness = req.query.liveness,
-        valence = req.query.valence;
+        valence = req.query.valence,
+        market = req.query.market || 'SE';
     const tempo = req.query.tempo;
 
     let genres = req.query.genres; //|| 'edm,dance,techno,hardstyle'
 
     let query = {
         limit: 100,
-        market: 'SE',
+        market: market,
         min_tempo: Number(tempo[0]),
         target_tempo: Number(tempo[1]),
         max_tempo: Number(tempo[2]),
