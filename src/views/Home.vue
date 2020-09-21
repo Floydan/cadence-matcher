@@ -109,21 +109,27 @@
           </div>
         </div>
 
-        <div class="form-group playlists-container">
-          <label for="playlists">Playlists</label>
-          <select
-            id="playlists"
-            class="form-control"
-            v-model="selectedPlaylistId"
-            v-on:change="getPlaylistTracks()"
-          >
-            <option value>Select a playlist to add songs to...</option>
-            <option
-              v-for="playlist in playlists"
-              v-bind:value="playlist.id"
-              v-bind:key="playlist.id"
-            >{{playlist.name}}</option>
-          </select>
+        <div class="form-inline playlists-container">
+          <div class="form-group mb-2">
+            <label for="playlists" class="sr-only">Playlists</label>
+            <select
+              id="playlists"
+              class="form-control"
+              v-model="selectedPlaylistId"
+              v-on:change="getPlaylistTracks()"
+            >
+              <option value>Select a playlist to add songs to...</option>
+              <option
+                v-for="playlist in playlists"
+                v-bind:value="playlist.id"
+                v-bind:key="playlist.id"
+              >{{playlist.name}}</option>
+            </select>
+          </div>
+          <button
+            class="btn btn-info mb-2"
+            @click="addPlaylistModalVisible = !addPlaylistModalVisible"
+          >+ Add</button>
         </div>
       </div>
     </div>
@@ -137,6 +143,15 @@
         :action="getRecommendations"
       >Find Recommendations</progress-button>
     </div>
+
+    <add-playlist-modal
+      v-if="user"
+      :show-modal="addPlaylistModalVisible"
+      :access-token="accessToken"
+      :user-id="user.id"
+      @close:playlist="playlistModalClosed"
+      @added:playlist="playlistAdded"
+    ></add-playlist-modal>
 
     <div class="tracks">
       <spotify-track
@@ -159,12 +174,14 @@ import axios from "axios";
 import progressButton from "../components/progressButton.vue";
 import spotifyTrack from "../components/spotify-track.vue";
 import userCard from "../components/user-card.vue";
+import addPlaylistModal from "../components/addPlaylistModal.vue";
 import SpotifyService from "../services/spotifyService";
 import VueSlider from "vue-slider-component";
 
 export default {
   data: () => {
     return {
+      addPlaylistModalVisible: false,
       tracks: [],
       playlistTracks: [],
       searchFilter: {
@@ -187,6 +204,13 @@ export default {
       searchInProgress: false,
     };
   },
+  components: {
+    "user-card": userCard,
+    "spotify-track": spotifyTrack,
+    "vue-slider": VueSlider,
+    "progress-button": progressButton,
+    "add-playlist-modal": addPlaylistModal,
+  },
   methods: {
     async getRecommendations(button) {
       this.searchInProgress = true;
@@ -205,18 +229,20 @@ export default {
         this.selectedPlaylistId
       );
     },
+    playlistModalClosed() {
+      this.addPlaylistModalVisible = false;
+    },
+    playlistAdded(playlist) {
+      this.playlists.splice(0, 0, playlist);
+      this.selectedPlaylistId = this.playlists[0].id;
+      this.addPlaylistModalVisible = false;
+    },
   },
   watch: {
     "searchFilter.targetBpm": function (newVal, oldVal) {
       this.searchFilter.minBpm = newVal - 5;
       this.searchFilter.maxBpm = newVal + 5;
     },
-  },
-  components: {
-    "user-card": userCard,
-    "spotify-track": spotifyTrack,
-    "vue-slider": VueSlider,
-    "progress-button": progressButton,
   },
   beforeCreate: function () {
     var params = Utilities.getHashParams();

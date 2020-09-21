@@ -1,7 +1,12 @@
 <template>
   <div id="user-profile" v-if="user && user.display_name">
     <div class="media">
-      <img class="mr-2" width="100" v-bind:src="user.images['0'].url" />
+      <img
+        class="mr-2"
+        width="100"
+        v-if="user.images && user.images.length !== 0"
+        v-bind:src="user.images['0'].url"
+      />
       <div class="media-body">
         <h1>{{user.display_name}}</h1>
         <div class="text-truncate">{{user.email}}</div>

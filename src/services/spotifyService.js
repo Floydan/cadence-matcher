@@ -52,6 +52,43 @@ export default class SpotifyService {
     }
 
     /**
+     * Creates a playlists 
+     * @return Promise
+     */
+    static async createPlaylist(accessToken, userId, {
+        name,
+        description,
+        isPublic
+    }) {
+        try {
+            const response = await axios.post(`/playlists/add/${userId}`, {
+                name,
+                description,
+                public: isPublic
+            }, {
+                headers: {
+                    accessToken: accessToken
+                }
+            });
+
+            if (response.status === 200 || response.status === 201)
+                return {
+                    success: true,
+                    data: response.data
+                };
+            return {
+                success: false,
+                data: response.data
+            };
+        } catch (err) {
+            return {
+                success: false,
+                data: err
+            };
+        }
+    }
+
+    /**
      * Obtains spotify seed genres
      * @return Promise
      */

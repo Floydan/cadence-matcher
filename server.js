@@ -118,6 +118,7 @@ app.get('/callback', function (req, res) {
     }
 });
 
+//refresh access token
 app.get('/refresh_token', function (req, res) {
 
     // requesting access token from refresh token
@@ -149,7 +150,7 @@ app.get('/refresh_token', function (req, res) {
     });
 });
 
-
+//Get playlists
 app.get('/playlists', function (req, res) {
     const accessToken = req.headers.accesstoken;
     var options = {
@@ -177,6 +178,7 @@ app.get('/playlists', function (req, res) {
     })
 });
 
+//Get recommendations
 app.get('/recommendations', function (req, res) {
     const accessToken = req.headers.accesstoken;
     const energy = req.query.energy,
@@ -236,6 +238,41 @@ app.get('/recommendations', function (req, res) {
     })
 });
 
+app.post('/playlists/add/:userid', function (req, res) {
+    const accessToken = req.headers.accesstoken;
+    const userId = req.params.userid,
+        name = req.body.name,
+        description = req.body.description,
+        public = req.body.public;
+
+    var options = {
+        url: `https://api.spotify.com/v1/users/${userId}/playlists `,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+        json: {
+            name,
+            description,
+            public
+        }
+    };
+
+    request.post(options, function (error, response, body) {
+        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
+            res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
+        }
+    })
+
+});
+
+// Add track to playlist
 app.post('/playlists/:id', function (req, res) {
     const accessToken = req.headers.accesstoken;
     const playlistId = req.params.id,
@@ -266,7 +303,7 @@ app.post('/playlists/:id', function (req, res) {
 
 });
 
-
+// Get playlist tracks
 app.get('/playlists/:id', function (req, res) {
     const accessToken = req.headers.accesstoken;
     const playlistId = req.params.id,
