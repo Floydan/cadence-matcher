@@ -31,12 +31,13 @@
         </div>
         <div class="form-check">
           <input
+            id="isPublic"
             type="checkbox"
             v-model="isPublic"
             placeholder="Playlist name"
             class="form-check-input"
           />
-          <label class="form-check-label" for="public">Public</label>
+          <label class="form-check-label" for="isPublic">Public</label>
         </div>
       </div>
       <div class="error">{{error}}</div>
@@ -100,7 +101,7 @@ export default {
     reset() {
       this.name = "";
       this.description = "";
-      this.public = true;
+      this.isPublic = true;
       this.error = "";
     },
   },
