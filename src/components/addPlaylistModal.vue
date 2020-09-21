@@ -32,7 +32,7 @@
         <div class="form-check">
           <input
             type="checkbox"
-            v-model="public"
+            v-model="isPublic"
             placeholder="Playlist name"
             class="form-check-input"
           />
@@ -64,7 +64,7 @@ export default {
       show: false,
       name: "",
       description: "",
-      public: true,
+      isPublic: true,
       error: "",
     };
   },
@@ -84,7 +84,7 @@ export default {
         {
           name: this.name,
           description: this.description,
-          isPublic: this.public,
+          isPublic: this.isPublic,
         }
       );
 
