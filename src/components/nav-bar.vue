@@ -48,17 +48,17 @@ export default {
 };
 
 function isLoggedIn() {
-    
-      var tokens = storageService.getTokens();
-      if (!tokens || !tokens.accessToken) return false;
+  var tokens = storageService.getTokens();
+  if (!tokens || !tokens.accessToken) return false;
 
-      return new Date(tokens.expire) > new Date();
+  return new Date(tokens.expire) > new Date();
 }
 </script>
 <style lang="scss" scoped>
+@import "../sass/_mixins";
+
 .main-navigation {
-  background: #1ed760;
-  color: #000;
+  @include yiq-contrasted($green);
   font-size: 1.2em;
   ul {
     list-style: none;
@@ -86,7 +86,7 @@ function isLoggedIn() {
       a {
         text-decoration: none;
         font-weight: bold;
-        color: #fff;
+        @include yiq-color($green);
 
         &.router-link-exact-active {
           text-decoration: underline;

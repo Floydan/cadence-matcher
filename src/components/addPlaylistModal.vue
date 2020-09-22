@@ -113,13 +113,14 @@ export default {
 };
 </script>
 <style lang="scss">
+@import "../sass/_mixins";
 .add-playlist {
   .modal-header {
-    background: #1ed760;
+    background: $green;
 
     > .h4 {
       margin-bottom: 0;
-      color: #fff;
+      @include yiq-color($green);
       font-weight: bold;
     }
   }

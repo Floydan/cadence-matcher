@@ -7,12 +7,11 @@
       </div>
       <div class="details">
         <div>
-          <h4>{{track.name}}</h4>
-          <h5>{{track.album.name}}</h5>
+          <h4 class="text-overflow" :title="track.name">{{track.name}}</h4>
+          <h5 class="text-overflow" :title="track.album.name">{{track.album.name}}</h5>
           <b>Artists</b>
-          <small>{{track.artists}}</small>
-        </div>
-        <div>
+          <small class="text-overflow" :title="track.artists">{{track.artists}}</small>
+          <br />
           <b>Length</b>
           <span>{{track.duration}}</span>
         </div>
@@ -21,18 +20,18 @@
     <div>
       <div class="player">
         <audio controls v-if="track.preview_url">
-          <source v-bind:src="track.preview_url" type="audio/mpeg" />
+          <source :src="track.preview_url" type="audio/mpeg" />
         </audio>
         <em v-if="!track.preview_url">Preview missing...</em>
       </div>
       <div class="actions">
         <button
-          class="btn btn-success"
-          v-on:click="addToPlaylist($event)"
-          v-bind:data-trackuri="track.uri"
-          v-bind:class="{'in-progress': addInProgress}"
-          v-bind:disabled="addDisabled || inPlaylist"
-        >{{(inPlaylist ? 'Already added' : addDisabled ? 'Added' : 'Add to playlist')}}</button>
+          class="btn"
+          @click="addToPlaylist($event)"
+          :data-trackuri="track.uri"
+          :class="{'in-progress': addInProgress, 'btn-dark': inPlaylist, 'btn-success': !inPlaylist}"
+          :disabled="addDisabled || inPlaylist"
+        >{{(inPlaylist || addDisabled ? 'In playlist' : 'Add to playlist')}}</button>
       </div>
     </div>
   </div>
@@ -40,11 +39,12 @@
 
 <script>
 import SpotifyService from "../services/spotifyService";
+import GlobalEventsService from "../services/globalEventsService";
 export default {
   name: "spotify-track",
   props: {
     track: Object,
-    playlistTracks: Array,
+    playlistTrackIds: Array,
     playlistId: String,
     accessToken: String,
   },
@@ -56,17 +56,13 @@ export default {
     };
   },
   watch: {
-    playlistTracks: function (newVal, oldVal) {
-      const tracks = this.playlistTracks.find(
-        (t) => t.track.id === this.track.id
-      );
+    playlistTrackIds: function (newVal, oldVal) {
+      const tracks = this.playlistTrackIds.find((id) => id === this.track.id);
       this.inPlaylist = tracks && tracks.length !== 0;
     },
   },
   mounted: function () {
-    const tracks = this.playlistTracks.find(
-      (t) => t.track.id === this.track.id
-    );
+    const tracks = this.playlistTrackIds.find((id) => id === this.track.id);
     this.inPlaylist = tracks && tracks.length !== 0;
   },
   methods: {
@@ -80,6 +76,21 @@ export default {
         this.track.uri
       );
       this.addInProgress = false;
+
+      if (response) {
+        this.$emit("track:added", this.track);
+        GlobalEventsService.dispatch("alert:home", {
+          severity: "success",
+          message: `The track '${this.track.name}' has been added to the playlist`,
+          timeout: 2000,
+        });
+      } else {
+        GlobalEventsService.dispatch("alert:home", {
+          severity: "warning",
+          message: `Failed to add the track '${this.track.name}'to the playlist, try again or not...`,
+          timeout: 4000,
+        });
+      }
 
       this.addDisabled = response;
     },
@@ -103,6 +114,10 @@ export default {
   position: relative;
   margin: 1rem 1rem 0 0;
 
+  &.semi-visible {
+    opacity: 0.7;
+  }
+
   @media only screen and (min-width: 767px) {
     width: 47%;
   }
@@ -111,19 +126,10 @@ export default {
     width: 31%;
   }
 
-  h4,
-  h5 {
-    margin-top: 0;
-  }
-
-  h4 {
-    font-size: 1.3em;
-  }
-
   .track-bg {
     position: absolute;
     height: 100%;
-    right: -15rem;
+    right: -10rem;
     opacity: 0.4;
     top: 0;
     z-index: 1;
@@ -137,6 +143,28 @@ export default {
 
     .details {
       flex: 1 auto;
+
+      h4,
+      h5 {
+        margin-top: 0;
+        width: 230px;
+      }
+
+      h4 {
+        font-size: 1.2em;
+      }
+      h5 {
+        &.text-overflow {
+          font-size: 0.85em;
+        }
+      }
+      small {
+        &.text-overflow {
+          display: inline-block;
+          width: 180px;
+          vertical-align: middle;
+        }
+      }
     }
 
     .album-image {

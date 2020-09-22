@@ -1,0 +1,25 @@
+@import "variables";
+
+@function yiq-contrast-color($background, $dark: $dark-default, $light: $light-default, $threshold: $threshold-default) {
+    $r: red($background);
+    $g: green($background);
+    $b: blue($background);
+
+    $yiq: (($r*299) + ($g*587) + ($b*114))/1000;
+
+    @if $yiq-debug {
+        @debug $yiq,
+        $threshold;
+    }
+
+    @return if($yiq >=$threshold, $dark, $light);
+}
+
+@mixin yiq-color($background, $dark: $dark-default, $light: $light-default, $threshold: $threshold-default) {
+    color: yiq-contrast-color($background, $dark, $light, $threshold);
+}
+
+@mixin yiq-contrasted($background, $dark: $dark-default, $light: $light-default, $threshold: $threshold-default) {
+    background: $background;
+    color: yiq-contrast-color($background, $dark, $light, $threshold);
+}

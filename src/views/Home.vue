@@ -2,7 +2,7 @@
   <div id="loggedin">
     <alerts :alert-types="['alert:home']"></alerts>
     <user-card v-bind:user="user"></user-card>
-    <div class="panel search-panel">
+    <div id="filters" class="panel search-panel">
       <div>
         <b>Target Tempo [min, target, max] BPM:</b>
         {{searchFilter.tempo}}
@@ -164,17 +164,30 @@
       @added:playlist="playlistAdded"
     ></add-playlist-modal>
 
-    <!-- <button @click="testEvents">Alert</button> -->
+    <!-- <button class="mt-3 mb-3" @click="testEvents">Alert</button> -->
 
     <div class="tracks">
       <spotify-track
-        v-for="(track, i) in tracks"
+        v-for="(track, i) in pagedTracks"
         :track="track"
-        :playlist-tracks="playlistTracks"
+        :playlist-track-ids="playlistTrackIds"
         :playlist-id="selectedPlaylistId"
         :access-token="accessToken"
         :key="`${i}-${track.id}`"
+        @track:added="playlistTrackAdded"
       ></spotify-track>
+    </div>
+    <p
+      class="showing-info"
+      v-if="tracks.length !== 0"
+    >Showing {{pagedTracks.length}} of {{tracks.length}} tracks</p>
+    <div style="margin-top: 2rem; text-align: center">
+      <button
+        v-if="tracks.length > 0"
+        :disabled="tracks.length === pagedTracks.length"
+        class="btn btn-success"
+        @click="resultTake = resultTake + defaultTake"
+      >Show {{defaultTake > loadMore ? loadMore : defaultTake}} more tracks</button>
     </div>
   </div>
 </template>
@@ -201,7 +214,7 @@ export default {
     return {
       addPlaylistModalVisible: false,
       tracks: [],
-      playlistTracks: [],
+      playlistTrackIds: [],
       searchFilter: {
         tempo: [120, 140, 160],
         genres: [],
@@ -218,8 +231,12 @@ export default {
       playlists: [],
       genres: [],
       user: {},
+      defaultTake: 20,
+      resultTake: 20,
+      pagedTracks: [],
       tokenExpiresAt: new Date(Date.now() - 1000),
       searchInProgress: false,
+      loadMore: 0,
     };
   },
   components: {
@@ -232,33 +249,56 @@ export default {
     alerts,
   },
   methods: {
+    //Test method for alerts
     testEvents() {
       const r = Math.random() + 1;
-      GlobalEventsService.dispatch("alert:global", {
-        severity: "info",
-        message: `${r} - we did it!`,
-      });
+      // GlobalEventsService.dispatch("alert:global", {
+      //   severity: "info",
+      //   message: `${r} - we did it!`,
+      // });
       GlobalEventsService.dispatch("alert:home", {
         severity: "success",
         message: `${r} - we did it!`,
+        timeout: 20000,
+      });
+      GlobalEventsService.dispatch("alert:home", {
+        severity: "info",
+        message: `${r} - we did it!`,
+        timeout: 5000,
+      });
+      GlobalEventsService.dispatch("alert:home", {
+        severity: "warning",
+        message: `${r} - we did it!`,
+        timeout: 1000,
+      });
+      GlobalEventsService.dispatch("alert:home", {
+        severity: "danger",
+        message: `${r} - we did it! but with a longer text to cause a linebreak`,
+        timeout: 2000,
       });
     },
     async getRecommendations(button) {
+      this.resultTake = this.defaultTake;
       this.searchInProgress = true;
       this.tracks = await SpotifyService.getRecommendations(
         this.accessToken,
         this.searchFilter,
         this.user.country
       );
+
+      this.pagedTracks = this.tracks.slice(0, this.resultTake);
+
       if (button && button.stop) button.stop(this.tracks.length > 0 ? 1 : -1);
       this.searchInProgress = false;
     },
     async getPlaylistTracks() {
       if (!this.selectedPlaylistId) return;
-      this.playlistTracks = await SpotifyService.getPlaylistTracks(
-        this.accessToken,
-        this.selectedPlaylistId
-      );
+      this.playlistTrackIds = (
+        await SpotifyService.getPlaylistTracks(
+          this.accessToken,
+          this.selectedPlaylistId
+        )
+      ).map((t) => t.track.id);
     },
     playlistModalClosed() {
       this.addPlaylistModalVisible = false;
@@ -268,11 +308,21 @@ export default {
       this.selectedPlaylistId = this.playlists[0].id;
       this.addPlaylistModalVisible = false;
     },
+    playlistTrackAdded(track) {
+      this.playlistTrackIds.push(track.id);
+    },
   },
   watch: {
     "searchFilter.targetBpm": function (newVal, oldVal) {
       this.searchFilter.minBpm = newVal - 5;
       this.searchFilter.maxBpm = newVal + 5;
+    },
+    resultTake: function (newVal) {
+      this.pagedTracks = this.tracks.slice(0, this.resultTake);
+    },
+    pagedTracks: function (newVal) {
+      const left = this.tracks.length - this.pagedTracks.length;
+      this.loadMore = left;
     },
   },
   beforeCreate: function () {
@@ -361,22 +411,13 @@ export default {
     try {
       const userResponse = await SpotifyService.getUser(this.accessToken);
 
-      if (userResponse.status === 200) {
-        this.user = userResponse.data;
-        this.playlists = await SpotifyService.getPlaylists(this.accessToken);
-        this.genres = await SpotifyService.getGenres(this.accessToken);
-        this.searchFilter = {
-          ...this.searchFilter,
-          ...StorageService.getFilters(),
-        };
-      } else {
-        this.accessToken = "";
-        this.refreshToken = "";
-        this.user = {};
-        StorageService.clearTokens();
-
-        this.$router.push("login");
-      }
+      this.user = userResponse.data;
+      this.playlists = await SpotifyService.getPlaylists(this.accessToken);
+      this.genres = await SpotifyService.getGenres(this.accessToken);
+      this.searchFilter = {
+        ...this.searchFilter,
+        ...StorageService.getFilters(),
+      };
     } catch (err) {
       this.accessToken = "";
       this.refreshToken = "";
@@ -407,10 +448,14 @@ function setAxiosInterceptors(app, accessToken, refreshToken) {
           axios.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${app.accessToken}`;
+          originalRequest.headers[
+            "Authorization"
+          ] = `Bearer ${app.accessToken}`;
         }
 
         if (originalRequest.headers["accessToken"]) {
           axios.defaults.headers.common["accessToken"] = app.accessToken;
+          originalRequest.headers["accessToken"] = app.accessToken;
         }
 
         StorageService.setTokens({
@@ -443,4 +488,10 @@ async function getUserData(accessToken) {
 }
 </script>
 <style lang="scss" scoped>
+@import "../sass/_mixins.scss";
+.showing-info {
+  margin-top: 1rem;
+  @include yiq-color(#000);
+  text-align: center;
+}
 </style>

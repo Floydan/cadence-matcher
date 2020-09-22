@@ -1,3 +1,6 @@
+@import "_variables";
+@import "mixins";
+
 body,
 html {
     margin: 0;
@@ -17,6 +20,8 @@ body {
     background-size: contain;
     padding-bottom: 3rem;
     font-family: "PT Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 audio {
@@ -52,6 +57,10 @@ audio {
     width: 500px;
 }
 
+.drop-shadow {
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
 .panel {
     background: rgba(255, 255, 255, 0.8);
     box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
@@ -80,8 +89,22 @@ audio {
     margin-right: -1rem;
 }
 
+.tracks::after {
+    content: "";
+    width: 100%;
+    margin: 1rem 1rem 0 0;
+
+    @media only screen and (min-width: 767px) {
+        width: 47%;
+    }
+
+    @media only screen and (min-width: 1024px) {
+        width: 31%;
+    }
+}
+
 .vue-slider-process {
-    background-color: #1ed760;
+    background-color: $green;
 }
 
 .vue-slider-rail {
@@ -91,7 +114,7 @@ audio {
 .multiselect__tag,
 .multiselect__option--highlight,
 .multiselect__option--highlight::after {
-    background: #1ed760;
+    @include yiq-contrasted($green);
 }
 
 .sliders {
