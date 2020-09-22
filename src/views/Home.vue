@@ -102,17 +102,16 @@
           <!-- <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
             <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
           </select>-->
-          <div>
-            <multiselect
-              id="genres"
-              v-model="searchFilter.genres"
-              placeholder="Select up to 5 genres"
-              :options="genres"
-              :searchable="true"
-              :allow-empty="true"
-              :multiple="true"
-            ></multiselect>
-          </div>
+          <multiselect
+            id="genres"
+            v-model="searchFilter.genres"
+            placeholder="Select up to 5 genres"
+            :options="genres"
+            :searchable="true"
+            :allow-empty="true"
+            :multiple="true"
+            :max="5"
+          ></multiselect>
           <div>
             <small>
               <i>Selected ({{searchFilter.genres.length}}):</i>
