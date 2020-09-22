@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <nav-bar></nav-bar>
+    <alerts :alert-types="['alert:global']"></alerts>
     <div class="container">
       <router-view />
     </div>
@@ -13,6 +14,7 @@
 <script>
 import "vue-slider-component/theme/default.css";
 import "./sass/main.scss";
+import alerts from "./components/alerts.vue";
 
 import axios from "axios";
 import Utilities from "./utilities";
@@ -23,7 +25,9 @@ export default {
       year: String,
     };
   },
-  components: {},
+  components: {
+    alerts,
+  },
   beforeMount() {
     this.year = new Date().getFullYear();
   },

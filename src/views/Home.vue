@@ -1,5 +1,6 @@
 <template>
   <div id="loggedin">
+    <alerts :alert-types="['alert:home']"></alerts>
     <user-card v-bind:user="user"></user-card>
     <div class="panel search-panel">
       <div>
@@ -98,9 +99,20 @@
           <label for="genres">
             <b>Genres (max 5):</b>
           </label>
-          <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
+          <!-- <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
             <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
-          </select>
+          </select>-->
+          <div>
+            <multiselect
+              id="genres"
+              v-model="searchFilter.genres"
+              placeholder="Select up to 5 genres"
+              :options="genres"
+              :searchable="true"
+              :allow-empty="true"
+              :multiple="true"
+            ></multiselect>
+          </div>
           <div>
             <small>
               <i>Selected ({{searchFilter.genres.length}}):</i>
@@ -153,6 +165,8 @@
       @added:playlist="playlistAdded"
     ></add-playlist-modal>
 
+    <!-- <button @click="testEvents">Alert</button> -->
+
     <div class="tracks">
       <spotify-track
         v-for="(track, i) in tracks"
@@ -167,16 +181,21 @@
 </template>
 
 <script>
+import "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
+
 import Utilities from "../utilities";
 import StorageService from "../services/storageService";
+import SpotifyService from "../services/spotifyService";
+import GlobalEventsService from "../services/globalEventsService";
 import axios from "axios";
 
 import progressButton from "../components/progressButton.vue";
 import spotifyTrack from "../components/spotify-track.vue";
 import userCard from "../components/user-card.vue";
 import addPlaylistModal from "../components/addPlaylistModal.vue";
-import SpotifyService from "../services/spotifyService";
+import alerts from "../components/alerts.vue";
 import VueSlider from "vue-slider-component";
+import Multiselect from "vue-multiselect";
 
 export default {
   data: () => {
@@ -210,8 +229,21 @@ export default {
     "vue-slider": VueSlider,
     "progress-button": progressButton,
     "add-playlist-modal": addPlaylistModal,
+    multiselect: Multiselect,
+    alerts,
   },
   methods: {
+    testEvents() {
+      const r = Math.random() + 1;
+      GlobalEventsService.dispatch("alert:global", {
+        severity: "info",
+        message: `${r} - we did it!`,
+      });
+      GlobalEventsService.dispatch("alert:home", {
+        severity: "success",
+        message: `${r} - we did it!`,
+      });
+    },
     async getRecommendations(button) {
       this.searchInProgress = true;
       this.tracks = await SpotifyService.getRecommendations(

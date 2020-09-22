@@ -119,6 +119,8 @@ export default {
 
     > .h4 {
       margin-bottom: 0;
+      color: #fff;
+      font-weight: bold;
     }
   }
 }
