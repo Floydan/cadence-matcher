@@ -94,12 +94,14 @@
           ></vue-slider>
         </div>
       </div>
-      <div>
+      <div class="seed-container">
         <b class="seed-toggle">
           Seeds
-          <span class="badge badge-light badge-pill">{{seedCount}}</span>
+          <span
+            class="badge badge-pill"
+            :class="{ 'badge-light': seedCount <= 5 && seedCount >= 1, 'badge-danger': seedCount > 5 || seedCount < 1}"
+          >{{seedCount}}</span>
         </b>
-        <span>(Min: 1; Max: 5)</span>
         <div class="form seeds">
           <div class="form-group">
             <label for="genres">
@@ -108,7 +110,7 @@
             <multiselect
               id="genres"
               v-model="searchFilter.genres"
-              placeholder="Select up to 5 genres"
+              :placeholder="`Select up to ${5 - seedCount} genres`"
               :options="genres"
               :searchable="true"
               :allow-empty="true"
@@ -124,7 +126,7 @@
             <multiselect
               id="artistsSearch"
               v-model="searchFilter.artists"
-              placeholder="Select up to 5 artists"
+              :placeholder="`Select up to ${5 - seedCount} artists`"
               track-by="id"
               label="name"
               value="id"
@@ -146,7 +148,7 @@
             <multiselect
               id="tracksSearch"
               v-model="searchFilter.tracks"
-              placeholder="Select up to 5 tracks"
+              :placeholder="`Select up to ${5 - seedCount} tracks`"
               track-by="id"
               label="name"
               value="id"
@@ -584,22 +586,24 @@ async function getUserData(accessToken) {
 <style lang="scss" scoped>
 @import "../sass/_variables.scss";
 @import "../sass/_mixins.scss";
-.seed-toggle {
+.seed-container {
   position: relative;
-  top: -4px;
-  background: $green;
-  padding: 0.3rem 0.5rem;
-  border: 1px solid $green;
-  z-index: 4;
-  color: #fff;
-}
-.seeds {
-  padding: 0.6rem;
-  border: 1px solid $green;
-  background: rgba(30, 215, 96, 0.5);
-  position: relative;
-  z-index: 3;
-  padding-bottom: 0;
+  z-index: 10;
+  .seed-toggle {
+    position: relative;
+    top: -4px;
+    background: $green;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid $green;
+    color: #fff;
+  }
+  .seeds {
+    padding: 0.6rem;
+    border: 1px solid $green;
+    background: rgba(30, 215, 96, 0.5);
+    position: relative;
+    padding-bottom: 0;
+  }
 }
 .playlists-container {
   margin-top: 1rem;
