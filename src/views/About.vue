@@ -47,10 +47,16 @@
       <li>
         <b>Seeds:</b>
         <br />
+        <p>
+          Recommendations are generated based on the available information for a given seed entity and matched against similar artists and tracks.
+          If there is sufficient information about the provided seeds, a list of tracks will be returned together with pool size details.
+          For artists and tracks that are very new or obscure there might not be enough data to generate a list of tracks.
+        </p>
         <div class="p">
           Up to 5 seed values may be provided in any combination of
           <pre>genres</pre>
           <pre>artists</pre>,
+          and
           <pre>tracks</pre>.
         </div>
       </li>
