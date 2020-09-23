@@ -153,6 +153,35 @@ app.get('/refresh_token', function (req, res) {
     });
 });
 
+app.get('/search', function (req, res) {
+    const accessToken = req.headers.accesstoken;
+    const type = req.query.type,
+        q = req.query.q,
+        market = 'from_token';
+
+    const query = { type, q, market };
+
+    var options = {
+        url: `https://api.spotify.com/v1/search?${querystring.stringify(query)}`,
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+        json: true
+    };
+    request.get(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            res.send(body);
+        } else {
+            res.statusCode = 500;
+            res.send({
+                error: error,
+                statusCode: response.statusCode,
+                body: body
+            });
+        }
+    })
+});
+
 //Get playlists
 app.get('/playlists', function (req, res) {
     const accessToken = req.headers.accesstoken;
@@ -190,10 +219,12 @@ app.get('/recommendations', function (req, res) {
         instrumentalness = req.query.instrumentalness,
         liveness = req.query.liveness,
         valence = req.query.valence,
-        market = req.query.market || 'SE';
+        market = 'from_token';
     const tempo = req.query.tempo;
 
     let genres = req.query.genres; //|| 'edm,dance,techno,hardstyle'
+    let artists = req.query.artists;
+    let tracks = req.query.tracks;
 
     let query = {
         limit: 100,
@@ -217,6 +248,12 @@ app.get('/recommendations', function (req, res) {
 
     if (genres && genres.length !== 0) {
         query.seed_genres = [...genres].slice(0, 5).join(',');
+    }
+    if (artists && artists.length !== 0) {
+        query.seed_artists = [...artists].slice(0, 5).join(',');
+    }
+    if (tracks && tracks.length !== 0) {
+        query.seed_tracks = [...tracks].slice(0, 5).join(',');
     }
 
     var options = {

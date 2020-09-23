@@ -44,6 +44,16 @@
           All target values will be weighed equally in ranking results.
         </div>
       </li>
+      <li>
+        <b>Seeds:</b>
+        <br />
+        <div class="p">
+          Up to 5 seed values may be provided in any combination of
+          <pre>genres</pre>
+          <pre>artists</pre>,
+          <pre>tracks</pre>.
+        </div>
+      </li>
     </ul>
     <h3>Search terms</h3>
     <ul>

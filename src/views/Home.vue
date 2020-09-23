@@ -94,54 +94,95 @@
           ></vue-slider>
         </div>
       </div>
-      <div class="form">
-        <div class="form-group">
-          <label for="genres">
-            <b>Genres (max 5):</b>
-          </label>
-          <!-- <select id="genres" class="form-control" v-model="searchFilter.genres" multiple required>
-            <option v-for="genre in genres" v-bind:value="genre" v-bind:key="genre">{{genre}}</option>
-          </select>-->
+      <div>
+        <b class="seed-toggle">
+          Seeds
+          <span class="badge badge-light badge-pill">{{seedCount}}</span>
+        </b>
+        <span>(Min: 1; Max: 5)</span>
+        <div class="form seeds">
+          <div class="form-group">
+            <label for="genres">
+              <b>Genre seeds:</b>
+            </label>
+            <multiselect
+              id="genres"
+              v-model="searchFilter.genres"
+              placeholder="Select up to 5 genres"
+              :options="genres"
+              :searchable="true"
+              :allow-empty="true"
+              :multiple="true"
+              :max="5"
+              :clear-on-select="false"
+              :close-on-select="false"
+            ></multiselect>
+
+            <label for="artistsSearch">
+              <b>Artist seeds:</b>
+            </label>
+            <multiselect
+              id="artistsSearch"
+              v-model="searchFilter.artists"
+              placeholder="Select up to 5 artists"
+              track-by="id"
+              label="name"
+              value="id"
+              :options="artistsSearch"
+              :searchable="true"
+              :allow-empty="true"
+              :multiple="true"
+              :max="5"
+              :loading="artistsSearchLoading"
+              :internal-search="false"
+              :clear-on-select="true"
+              :close-on-select="true"
+              @search-change="searchForArtist"
+            ></multiselect>
+
+            <label for="tracksSearch">
+              <b>Track seeds:</b>
+            </label>
+            <multiselect
+              id="tracksSearch"
+              v-model="searchFilter.tracks"
+              placeholder="Select up to 5 tracks"
+              track-by="id"
+              label="name"
+              value="id"
+              :options="tracksSearch"
+              :searchable="true"
+              :allow-empty="true"
+              :multiple="true"
+              :max="5"
+              :loading="tracksSearchLoading"
+              :internal-search="false"
+              :clear-on-select="true"
+              :close-on-select="true"
+              @search-change="searchForTrack"
+            ></multiselect>
+          </div>
+        </div>
+      </div>
+      <div class="playlists-container">
+        <div class="mb-2 mr-2 flex-grow-1">
+          <label for="playlists">Playlist to add songs to</label>
           <multiselect
-            id="genres"
-            v-model="searchFilter.genres"
-            placeholder="Select up to 5 genres"
-            :options="genres"
+            id="playlists"
+            placeholder="Select a playlist..."
+            v-model="selectedPlaylistId"
+            label="name"
+            value="id"
+            :options="playlists"
+            :multiple="false"
             :searchable="true"
             :allow-empty="true"
-            :multiple="true"
-            :max="5"
           ></multiselect>
-          <div>
-            <small>
-              <i>Selected ({{searchFilter.genres.length}}):</i>
-              <i v-for="genre in searchFilter.genres" v-bind:key="genre">{{genre}} &nbsp;</i>
-            </small>
-          </div>
         </div>
-
-        <div class="form-inline playlists-container">
-          <div class="form-group mb-2">
-            <label for="playlists" class="sr-only">Playlists</label>
-            <select
-              id="playlists"
-              class="form-control"
-              v-model="selectedPlaylistId"
-              v-on:change="getPlaylistTracks()"
-            >
-              <option value>Select a playlist to add songs to...</option>
-              <option
-                v-for="playlist in playlists"
-                v-bind:value="playlist.id"
-                v-bind:key="playlist.id"
-              >{{playlist.name}}</option>
-            </select>
-          </div>
-          <button
-            class="btn btn-info mb-2"
-            @click="addPlaylistModalVisible = !addPlaylistModalVisible"
-          >+ Add</button>
-        </div>
+        <button
+          class="btn btn-info mb-2"
+          @click="addPlaylistModalVisible = !addPlaylistModalVisible"
+        >+ Add</button>
       </div>
     </div>
     <div class="button-holder">
@@ -164,7 +205,9 @@
       @added:playlist="playlistAdded"
     ></add-playlist-modal>
 
-    <!-- <button class="mt-3 mb-3" @click="testEvents">Alert</button> -->
+    <!-- <div class="mt-3 mb-3">
+      <button class="mt-3 mb-3" @click="testEvents">Alert</button>
+    </div>-->
 
     <div class="tracks">
       <spotify-track
@@ -175,6 +218,7 @@
         :access-token="accessToken"
         :key="`${i}-${track.id}`"
         @track:added="playlistTrackAdded"
+        @track:addToSearch="addTrackToSearchFilter"
       ></spotify-track>
     </div>
     <p
@@ -200,6 +244,7 @@ import StorageService from "../services/storageService";
 import SpotifyService from "../services/spotifyService";
 import GlobalEventsService from "../services/globalEventsService";
 import axios from "axios";
+import debounce from "debounce";
 
 import progressButton from "../components/progressButton.vue";
 import spotifyTrack from "../components/spotify-track.vue";
@@ -218,6 +263,8 @@ export default {
       searchFilter: {
         tempo: [120, 140, 160],
         genres: [],
+        artists: [],
+        tracks: [],
         energy: [0.0, 1.0],
         acousticness: [0.0, 1.0],
         danceability: [0.0, 1.0],
@@ -225,11 +272,13 @@ export default {
         liveness: [0.0, 1.0],
         valence: [0.0, 1.0],
       },
-      access_token: "",
-      refresh_token: "",
+      accessToken: "",
+      refreshToken: "",
       selectedPlaylistId: "",
       playlists: [],
       genres: [],
+      artistsSearch: [],
+      tracksSearch: [],
       user: {},
       defaultTake: 20,
       resultTake: 20,
@@ -237,6 +286,9 @@ export default {
       tokenExpiresAt: new Date(Date.now() - 1000),
       searchInProgress: false,
       loadMore: 0,
+      artistsSearchLoading: false,
+      tracksSearchLoading: false,
+      searchTimeout: undefined,
     };
   },
   components: {
@@ -300,6 +352,35 @@ export default {
         )
       ).map((t) => t.track.id);
     },
+    searchForArtist(query) {
+      if (query && query.length > 1) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(async () => {
+          this.artistsSearchLoading = true;
+          this.artistsSearch = (
+            await SpotifyService.search(this.accessToken, "artist", query)
+          ).map((a) => {
+            return { name: a.name, id: a.id };
+          });
+          this.artistsSearchLoading = false;
+        }, 500);
+      }
+    },
+    searchForTrack(query) {
+      if (query && query.length > 1) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(async () => {
+          this.tracksSearchLoading = true;
+          this.tracksSearch = (
+            await SpotifyService.search(this.accessToken, "track", query)
+          ).map((t) => {
+            const trackArtists = t.artists.map((a) => a.name).join(", ");
+            return { name: `${t.name} - ${trackArtists}`, id: t.id };
+          });
+          this.tracksSearchLoading = false;
+        }, 500);
+      }
+    },
     playlistModalClosed() {
       this.addPlaylistModalVisible = false;
     },
@@ -310,6 +391,19 @@ export default {
     },
     playlistTrackAdded(track) {
       this.playlistTrackIds.push(track.id);
+    },
+    addTrackToSearchFilter(track) {
+      const t = { name: `${track.name} - ${track.artists}`, id: track.id };
+      this.searchFilter.tracks.push(t);
+    },
+  },
+  computed: {
+    seedCount() {
+      return [
+        ...this.searchFilter.genres,
+        ...this.searchFilter.artists,
+        ...this.searchFilter.tracks,
+      ].length;
     },
   },
   watch: {
@@ -488,7 +582,33 @@ async function getUserData(accessToken) {
 }
 </script>
 <style lang="scss" scoped>
+@import "../sass/_variables.scss";
 @import "../sass/_mixins.scss";
+.seed-toggle {
+  position: relative;
+  top: -4px;
+  background: $green;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid $green;
+  z-index: 4;
+  color: #fff;
+}
+.seeds {
+  padding: 0.6rem;
+  border: 1px solid $green;
+  background: rgba(30, 215, 96, 0.5);
+  position: relative;
+  z-index: 3;
+  padding-bottom: 0;
+}
+.playlists-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
 .showing-info {
   margin-top: 1rem;
   @include yiq-color(#000);

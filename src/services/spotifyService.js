@@ -104,6 +104,20 @@ export default class SpotifyService {
         return [];
     }
 
+    static async search(accessToken, type, query) {
+        const data = { type, q: query };
+        const response = await axios.get('/search', {
+            headers: {
+                accessToken: accessToken
+            },
+            params: data,
+        });
+        if (response.status === 200) {
+            return response.data[`${type}s`].items;
+        }
+        return [];
+    }
+
     /**
      * Obtains spotify recommendations based on bpm and genres
      * @return Promise
@@ -120,7 +134,9 @@ export default class SpotifyService {
             danceability,
             instrumentalness,
             liveness,
-            valence
+            valence,
+            artists,
+            tracks
         },
         market) {
         var data = {
@@ -135,15 +151,25 @@ export default class SpotifyService {
             instrumentalness,
             liveness,
             valence,
-            market
+            market,
+            artists,
+            tracks
         };
 
-        if (!data.genres || data.genres.length === 0) {
-            alert('You have to select atleast 1 genre');
+        const seeds = [...data.genres, ...data.artists, ...data.tracks];
+        if (!seeds || seeds.length === 0) {
+            alert('You have to select atleast 1 genre, artist or track seed');
+            return [];
+        }
+        if (seeds && seeds.length > 5) {
+            alert('You have to select too many seeds');
             return [];
         }
 
         StorageService.setFilters(data);
+
+        data.artists = artists.map((a) => a.id);
+        data.tracks = tracks.map((a) => a.id);
 
         const response = await axios.get('/recommendations', {
             headers: {
@@ -151,6 +177,7 @@ export default class SpotifyService {
             },
             params: data,
         });
+
         if (response.status === 200) {
             const tracks = [];
             for (let track of response.data.tracks) {

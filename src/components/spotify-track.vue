@@ -10,14 +10,14 @@
           <h4 class="text-overflow" :title="track.name">{{track.name}}</h4>
           <h5 class="text-overflow" :title="track.album.name">{{track.album.name}}</h5>
           <b>Artists</b>
-          <small class="text-overflow" :title="track.artists">{{track.artists}}</small>
+          <span class="text-overflow" :title="track.artists">{{track.artists}}</span>
           <br />
           <b>Length</b>
           <span>{{track.duration}}</span>
         </div>
       </div>
     </div>
-    <div>
+    <div class="bottom">
       <div class="player">
         <audio controls v-if="track.preview_url">
           <source :src="track.preview_url" type="audio/mpeg" />
@@ -32,6 +32,11 @@
           :class="{'in-progress': addInProgress, 'btn-dark': inPlaylist, 'btn-success': !inPlaylist}"
           :disabled="addDisabled || inPlaylist"
         >{{(inPlaylist || addDisabled ? 'In playlist' : 'Add to playlist')}}</button>
+        <button
+          class="btn btn-info"
+          @click="addTrackToSearchFilter($event)"
+          :data-trackuri="track.uri"
+        >Add in search filter</button>
       </div>
     </div>
   </div>
@@ -94,6 +99,9 @@ export default {
 
       this.addDisabled = response;
     },
+    addTrackToSearchFilter() {
+      this.$emit("track:addToSearch", this.track);
+    },
   },
 };
 </script>
@@ -143,6 +151,7 @@ export default {
 
     .details {
       flex: 1 auto;
+      font-size: 0.8rem;
 
       h4,
       h5 {
@@ -151,18 +160,20 @@ export default {
       }
 
       h4 {
-        font-size: 1.2em;
+        font-size: 1.4em;
+        line-height: 1.4;
       }
       h5 {
         &.text-overflow {
-          font-size: 0.85em;
+          font-size: 1.1em;
+          line-height: 1.1;
         }
       }
-      small {
+      span {
         &.text-overflow {
           display: inline-block;
           width: 180px;
-          vertical-align: middle;
+          vertical-align: bottom;
         }
       }
     }
@@ -172,13 +183,19 @@ export default {
     }
   }
 
-  .player {
+  .bottom {
     position: relative;
-    z-index: 3;
-  }
+    z-index: 10;
+    .player {
+      position: relative;
+      z-index: 3;
+    }
 
-  .actions {
-    margin-top: 1rem;
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }
 </style>

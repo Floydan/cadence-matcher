@@ -14,7 +14,7 @@ export default class Utilities {
         }
         return hashParams;
     }
-    
+
     /**
      * parses milliseconds to hours:minutes:seconds
      * @return String
@@ -41,4 +41,15 @@ export default class Utilities {
     static calculatePercentage(loaded, total) {
         return Math.floor((loaded * 1.0) / total);
     }
+
+    static debounce(callback, wait) {
+        let timeout;
+        return (...args) => {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => callback.apply(context, args), wait);
+        };
+    }
+
+
 }

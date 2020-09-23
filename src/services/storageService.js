@@ -14,7 +14,9 @@ export default class StorageService {
         danceability,
         instrumentalness,
         liveness,
-        valence
+        valence,
+        artists,
+        tracks
     }) {
         localStorage.setItem('filters', JSON.stringify({
             minBpm,
@@ -27,7 +29,9 @@ export default class StorageService {
             danceability,
             instrumentalness,
             liveness,
-            valence
+            valence,
+            artists,
+            tracks
         }));
     }
 
