@@ -1,10 +1,12 @@
-var express = require('express'); // Express web server framework
-var request = require('request'); // "Request" library
-var cors = require('cors');
-var querystring = require('querystring');
-var cookieParser = require('cookie-parser');
-var dotenv = require('dotenv');
-var bodyParser = require('body-parser');
+const express = require('express'), // Express web server framework
+    request = require('request'), // "Request" library
+    cors = require('cors'),
+    querystring = require('querystring'),
+    cookieParser = require('cookie-parser'),
+    dotenv = require('dotenv'),
+    bodyParser = require('body-parser'),
+    favicon = require('serve-favicon'),
+    path = require('path');
 dotenv.config();
 
 const port = process.env.PORT,
@@ -32,6 +34,7 @@ var stateKey = 'spotify_auth_state';
 var app = express();
 
 app.use(express.static(__dirname + '/dist'))
+    .use(favicon(path.join(__dirname, 'dist', 'favicon.ico')))
     .use(cors())
     .use(bodyParser.json())
     .use(cookieParser());

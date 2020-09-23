@@ -82,11 +82,12 @@ function uuidv4() {
   font-weight: normal;
   font-style: normal;
   font-family: "icomoon";
-  src: url("../fonts/icomoon/icomoon.eot");
-  src: url("../fonts/icomoon/icomoon.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/icomoon/icomoon.ttf") format("truetype"),
-    url("../fonts/icomoon/icomoon.woff") format("woff"),
-    url("../fonts/icomoon/icomoon.svg#icomoon") format("svg");
+  src: url("../assets/fonts/icomoon/icomoon.eot");
+  src: url("../assets/fonts/icomoon/icomoon.eot?#iefix")
+      format("embedded-opentype"),
+    url("../assets/fonts/icomoon/icomoon.ttf") format("truetype"),
+    url("../assets/fonts/icomoon/icomoon.woff") format("woff"),
+    url("../assets/fonts/icomoon/icomoon.svg#icomoon") format("svg");
 }
 
 .alerts {

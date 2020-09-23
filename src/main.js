@@ -4,6 +4,8 @@ import router from './router';
 
 import navBar from "./components/nav-bar.vue";
 
+require('./favicon.ico');
+
 Vue.config.productionTip = false;
 
 Vue.component('nav-bar', navBar);

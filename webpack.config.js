@@ -99,17 +99,17 @@ module.exports = (env, argsv) => {
                     ]
                 },
                 {
-                    test: /.(png|jpg|gif|bmp)$/i,
+                    test: /.(png|jpg|gif|bmp|ico)$/i,
                     use: [{
                         loader: 'file-loader',
                         options: {
                             name: '[path][name].[ext]',
                             context: path.resolve(__dirname, 'src'),
                             outputPath: (resourcePath, context) => {
-                                return path.relative(path.dirname(resourcePath), context).substr(6);
+                                return resourcePath;
                             },
                             publicPath: '/',
-                            userRelativePaths: true,
+                            userRelativePaths: false,
                             esModule: false,
                         }
                     }]
@@ -121,10 +121,10 @@ module.exports = (env, argsv) => {
                             name: '[path][name].[ext]',
                             context: path.resolve(__dirname, 'src'),
                             outputPath: (resourcePath, context) => {
-                                return path.relative(path.dirname(resourcePath), context).substr(9);
+                                return resourcePath;
                             },
                             publicPath: '/',
-                            userRelativePaths: true,
+                            userRelativePaths: false,
                             esModule: false,
                         }
                     }]

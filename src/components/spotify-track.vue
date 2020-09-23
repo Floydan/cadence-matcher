@@ -1,6 +1,6 @@
 <template>
   <div class="track">
-    <img class="track-bg" src="/images/spotify-logo.png" />
+    <img class="track-bg" src="../assets/images/spotify-logo.png" />
     <div class="track-info">
       <div class="album-image">
         <img class="media-object" width="64" v-bind:src="track.albumImage" />
