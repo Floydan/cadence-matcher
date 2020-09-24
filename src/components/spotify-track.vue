@@ -3,7 +3,7 @@
     <img class="track-bg" src="../assets/images/spotify-logo.png" />
     <div class="track-info">
       <div class="album-image">
-        <img class="media-object" width="64" v-bind:src="track.albumImage" />
+        <img class="media-object" width="64" :src="track.albumImage" />
       </div>
       <div class="details">
         <div>
@@ -28,15 +28,16 @@
         <button
           class="btn"
           @click="addToPlaylist($event)"
-          :data-trackuri="track.uri"
           :class="{'in-progress': addInProgress, 'btn-dark': inPlaylist, 'btn-success': !inPlaylist}"
           :disabled="addDisabled || inPlaylist"
         >{{(inPlaylist || addDisabled ? 'In playlist' : 'Add to playlist')}}</button>
-        <button
-          class="btn btn-info"
-          @click="addTrackToSearchFilter($event)"
-          :data-trackuri="track.uri"
-        >Add in search filter</button>
+        <div>
+          <span>Seed</span>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-info" @click="addTrackToSearchFilter($event)">Track</button>
+            <button class="btn btn-info" @click="addArtistToSearchFilter($event)">Artist</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -101,6 +102,9 @@ export default {
     },
     addTrackToSearchFilter() {
       this.$emit("track:addToSearch", this.track);
+    },
+    addArtistToSearchFilter() {
+      this.$emit("artist:addToSearch", this.track.album.artists);
     },
   },
 };
@@ -195,6 +199,12 @@ export default {
       margin-top: 1rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+
+      span {
+        font-weight: bold;
+        font-size: 0.8em;
+      }
     }
   }
 }

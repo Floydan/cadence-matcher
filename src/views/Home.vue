@@ -221,6 +221,7 @@
         :key="`${i}-${track.id}`"
         @track:added="playlistTrackAdded"
         @track:addToSearch="addTrackToSearchFilter"
+        @artist:addToSearch="addArtistToSearchFilter"
       ></spotify-track>
     </div>
     <p
@@ -395,8 +396,20 @@ export default {
       this.playlistTrackIds.push(track.id);
     },
     addTrackToSearchFilter(track) {
-      const t = { name: `${track.name} - ${track.artists}`, id: track.id };
-      this.searchFilter.tracks.push(t);
+      this.searchFilter.tracks.push({
+        name: `${track.name} - ${track.artists}`,
+        id: track.id,
+      });
+      this.searchFilter.tracks = this.uniqueSeedTracks;
+    },
+    addArtistToSearchFilter(artists) {
+      for (var artist of artists) {
+        this.searchFilter.artists.push({
+          name: `${artist.name}`,
+          id: artist.id,
+        });
+      }
+      this.searchFilter.artists = this.uniqueSeedArtists;
     },
   },
   computed: {
@@ -406,6 +419,12 @@ export default {
         ...this.searchFilter.artists,
         ...this.searchFilter.tracks,
       ].length;
+    },
+    uniqueSeedArtists() {
+      return Utilities.uniqueInArrayAdv(this.searchFilter.artists, "id");
+    },
+    uniqueSeedTracks() {
+      return Utilities.uniqueInArrayAdv(this.searchFilter.tracks, "id");
     },
   },
   watch: {

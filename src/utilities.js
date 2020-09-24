@@ -51,5 +51,19 @@ export default class Utilities {
         };
     }
 
+    static uniqueInArray(value, index, self) {
+        return self.indexOf(value) === index;
+    }
 
+    static uniqueInArrayAdv(arr, prop) {
+        const uniquePropValues = [...new Set(arr.map((t) => t[prop]))];
+        let uniqueItems = [];
+        for (const item of arr) {
+            if (!uniquePropValues.includes(item[prop])) continue;
+            const inArray = uniqueItems.filter((t) => t[prop] === item[prop]);
+            if (inArray.length !== 0) continue;
+            uniqueItems.push(item);
+        }
+        return uniqueItems;
+    }
 }
