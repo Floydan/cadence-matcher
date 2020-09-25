@@ -37,7 +37,7 @@
             'btn-dark': inPlaylist,
             'btn-success': !inPlaylist,
           }"
-          :disabled="addDisabled || inPlaylist"
+          :disabled="addDisabled || inPlaylist || !playlist.id"
         >
           {{ inPlaylist || addDisabled ? "In playlist" : "Add to playlist" }}
         </button>

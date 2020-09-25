@@ -183,6 +183,7 @@
             :multiple="false"
             :searchable="true"
             :allow-empty="true"
+            @select="getPlaylistTracks"
           ></multiselect>
         </div>
         <button
@@ -285,7 +286,7 @@ export default {
       },
       accessToken: "",
       refreshToken: "",
-      selectedPlaylist: "",
+      selectedPlaylist: { id: "", name: "" },
       playlists: [],
       genres: [],
       artistsSearch: [],
@@ -354,13 +355,10 @@ export default {
       if (button && button.stop) button.stop(this.tracks.length > 0 ? 1 : -1);
       this.searchInProgress = false;
     },
-    async getPlaylistTracks() {
-      if (!this.selectedPlaylist) return;
+    async getPlaylistTracks(playlist) {
+      if (!playlist || !playlist.id) return;
       this.playlistTrackIds = (
-        await SpotifyService.getPlaylistTracks(
-          this.accessToken,
-          this.selectedPlaylist.id
-        )
+        await SpotifyService.getPlaylistTracks(this.accessToken, playlist.id)
       ).map((t) => t.track.id);
     },
     searchForArtist(query) {
