@@ -30,7 +30,17 @@ module.exports = (env, argsv) => {
         },
         module: {
             rules: [
-                // ... other rules
+                {
+                    test: /\.m?js$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env'],
+                            plugins: ['@babel/plugin-transform-runtime']
+                        }
+                    }
+                },
                 {
                     test: /\.vue$/,
                     loader: 'vue-loader'

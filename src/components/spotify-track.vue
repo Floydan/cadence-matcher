@@ -30,7 +30,7 @@
       </div>
       <div class="actions">
         <button
-          class="btn"
+          class="btn add-to-playlist"
           @click="addToPlaylist($event)"
           :class="{
             'in-progress': addInProgress,
@@ -42,20 +42,42 @@
           {{ inPlaylist || addDisabled ? "In playlist" : "Add to playlist" }}
         </button>
         <div>
-          <span>Seed</span>
-          <div class="btn-group btn-group-sm">
-            <button
-              class="btn btn-info"
-              @click="addTrackToSearchFilter($event)"
-            >
-              Track
-            </button>
-            <button
-              class="btn btn-info"
-              @click="addArtistToSearchFilter($event)"
-            >
-              Artist
-            </button>
+          <div class="open-in">
+            <span>Open in</span>
+            <div class="btn-group btn-group-sm">
+              <a
+                class="btn btn-info spotify-btn"
+                v-if="track.uri"
+                :href="track.uri"
+              >
+                Spotify
+              </a>
+              <a
+                class="btn btn-info"
+                target="_blank"
+                v-if="track.external_urls && track.external_urls['spotify']"
+                :href="track.external_urls['spotify']"
+              >
+                Browser
+              </a>
+            </div>
+          </div>
+          <div class="seeds">
+            <span>Seed</span>
+            <div class="btn-group btn-group-sm">
+              <button
+                class="btn btn-info"
+                @click="addTrackToSearchFilter($event)"
+              >
+                Track
+              </button>
+              <button
+                class="btn btn-info"
+                @click="addArtistToSearchFilter($event)"
+              >
+                Artist
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -131,16 +153,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../sass/_variables.scss";
 .track {
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
   padding: 1rem;
   width: 100%;
-  height: 260px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid olive;
+  border: 5px solid $green;
   border-radius: 1rem;
   overflow: hidden;
   position: relative;
@@ -219,11 +242,36 @@ export default {
       margin-top: 1rem;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;
 
       span {
         font-weight: bold;
         font-size: 0.8em;
+      }
+      .add-to-playlist:not([disabled]),
+      .spotify-btn {
+        background: $green;
+        border-color: $green;
+
+        &:hover {
+          background: darken($green, 10%);
+          border-color: darken($green, 10%);
+        }
+      }
+      .open-in {
+        margin-bottom: 0.2rem;
+      }
+      .seeds {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        button:first-child {
+          border-right: 2px solid #117a8b;
+          &:hover {
+            border-right: 2px solid #117a8b;
+          }
+        }
       }
     }
   }
