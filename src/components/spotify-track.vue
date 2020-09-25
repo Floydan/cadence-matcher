@@ -7,13 +7,17 @@
       </div>
       <div class="details">
         <div>
-          <h4 class="text-overflow" :title="track.name">{{track.name}}</h4>
-          <h5 class="text-overflow" :title="track.album.name">{{track.album.name}}</h5>
+          <h4 class="text-overflow" :title="track.name">{{ track.name }}</h4>
+          <h5 class="text-overflow" :title="track.album.name">
+            {{ track.album.name }}
+          </h5>
           <b>Artists</b>
-          <span class="text-overflow" :title="track.artists">{{track.artists}}</span>
+          <span class="text-overflow" :title="track.artists">{{
+            track.artists
+          }}</span>
           <br />
           <b>Length</b>
-          <span>{{track.duration}}</span>
+          <span>{{ track.duration }}</span>
         </div>
       </div>
     </div>
@@ -28,14 +32,30 @@
         <button
           class="btn"
           @click="addToPlaylist($event)"
-          :class="{'in-progress': addInProgress, 'btn-dark': inPlaylist, 'btn-success': !inPlaylist}"
+          :class="{
+            'in-progress': addInProgress,
+            'btn-dark': inPlaylist,
+            'btn-success': !inPlaylist,
+          }"
           :disabled="addDisabled || inPlaylist"
-        >{{(inPlaylist || addDisabled ? 'In playlist' : 'Add to playlist')}}</button>
+        >
+          {{ inPlaylist || addDisabled ? "In playlist" : "Add to playlist" }}
+        </button>
         <div>
           <span>Seed</span>
           <div class="btn-group btn-group-sm">
-            <button class="btn btn-info" @click="addTrackToSearchFilter($event)">Track</button>
-            <button class="btn btn-info" @click="addArtistToSearchFilter($event)">Artist</button>
+            <button
+              class="btn btn-info"
+              @click="addTrackToSearchFilter($event)"
+            >
+              Track
+            </button>
+            <button
+              class="btn btn-info"
+              @click="addArtistToSearchFilter($event)"
+            >
+              Artist
+            </button>
           </div>
         </div>
       </div>
@@ -51,7 +71,7 @@ export default {
   props: {
     track: Object,
     playlistTrackIds: Array,
-    playlistId: String,
+    playlist: Object,
     accessToken: String,
   },
   data: function () {
@@ -78,7 +98,7 @@ export default {
       this.addInProgress = true;
       var response = await SpotifyService.addTrackToPlaylist(
         this.accessToken,
-        this.playlistId,
+        this.playlist.id,
         this.track.uri
       );
       this.addInProgress = false;
@@ -87,13 +107,13 @@ export default {
         this.$emit("track:added", this.track);
         GlobalEventsService.dispatch("alert:home", {
           severity: "success",
-          message: `The track '${this.track.name}' has been added to the playlist`,
+          message: `The track '${this.track.name}' has been added to the '${this.playlist.name}' playlist`,
           timeout: 2000,
         });
       } else {
         GlobalEventsService.dispatch("alert:home", {
           severity: "warning",
-          message: `Failed to add the track '${this.track.name}'to the playlist, try again or not...`,
+          message: `Failed to add the track '${this.track.name}'to the '${this.playlist.name}' playlist, try again... or not...`,
           timeout: 4000,
         });
       }

@@ -5,7 +5,7 @@
     <div id="filters" class="panel search-panel">
       <div>
         <b>Target Tempo [min, target, max] BPM:</b>
-        {{searchFilter.tempo}}
+        {{ searchFilter.tempo }}
         <vue-slider
           v-model="searchFilter.tempo"
           :min="50.0"
@@ -18,7 +18,7 @@
       <div class="sliders">
         <div>
           <b>Energy:</b>
-          {{searchFilter.energy}}
+          {{ searchFilter.energy }}
           <vue-slider
             v-model="searchFilter.energy"
             :min="0.0"
@@ -31,7 +31,7 @@
 
         <div>
           <b>Acousticness:</b>
-          {{searchFilter.acousticness}}
+          {{ searchFilter.acousticness }}
           <vue-slider
             v-model="searchFilter.acousticness"
             :min="0.0"
@@ -44,7 +44,7 @@
 
         <div>
           <b>Danceability:</b>
-          {{searchFilter.danceability}}
+          {{ searchFilter.danceability }}
           <vue-slider
             v-model="searchFilter.danceability"
             :min="0.0"
@@ -57,7 +57,7 @@
 
         <div>
           <b>Instrumentalness:</b>
-          {{searchFilter.instrumentalness}}
+          {{ searchFilter.instrumentalness }}
           <vue-slider
             v-model="searchFilter.instrumentalness"
             :min="0.0"
@@ -70,7 +70,7 @@
 
         <div>
           <b>Liveness:</b>
-          {{searchFilter.liveness}}
+          {{ searchFilter.liveness }}
           <vue-slider
             v-model="searchFilter.liveness"
             :min="0.0"
@@ -83,7 +83,7 @@
 
         <div>
           <b>Valence:</b>
-          {{searchFilter.valence}}
+          {{ searchFilter.valence }}
           <vue-slider
             v-model="searchFilter.valence"
             :min="0.0"
@@ -99,8 +99,12 @@
           Seeds
           <span
             class="badge badge-pill"
-            :class="{ 'badge-light': seedCount <= 5 && seedCount >= 1, 'badge-danger': seedCount > 5 || seedCount < 1}"
-          >{{seedCount}}</span>
+            :class="{
+              'badge-light': seedCount <= 5 && seedCount >= 1,
+              'badge-danger': seedCount > 5 || seedCount < 1,
+            }"
+            >{{ seedCount }}</span
+          >
         </b>
         <div class="form seeds">
           <div class="form-group">
@@ -172,7 +176,7 @@
           <multiselect
             id="playlists"
             placeholder="Select a playlist..."
-            v-model="selectedPlaylistId"
+            v-model="selectedPlaylist"
             label="name"
             value="id"
             :options="playlists"
@@ -184,7 +188,9 @@
         <button
           class="btn btn-info mb-2"
           @click="addPlaylistModalVisible = !addPlaylistModalVisible"
-        >+ Add</button>
+        >
+          + Add
+        </button>
       </div>
     </div>
     <div class="button-holder">
@@ -195,7 +201,8 @@
         :horizontal="true"
         :vertical="false"
         :action="getRecommendations"
-      >Find Recommendations</progress-button>
+        >Find Recommendations</progress-button
+      >
     </div>
 
     <add-playlist-modal
@@ -216,7 +223,7 @@
         v-for="(track, i) in pagedTracks"
         :track="track"
         :playlist-track-ids="playlistTrackIds"
-        :playlist-id="selectedPlaylistId"
+        :playlist="selectedPlaylist"
         :access-token="accessToken"
         :key="`${i}-${track.id}`"
         @track:added="playlistTrackAdded"
@@ -224,17 +231,18 @@
         @artist:addToSearch="addArtistToSearchFilter"
       ></spotify-track>
     </div>
-    <p
-      class="showing-info"
-      v-if="tracks.length !== 0"
-    >Showing {{pagedTracks.length}} of {{tracks.length}} tracks</p>
+    <p class="showing-info" v-if="tracks.length !== 0">
+      Showing {{ pagedTracks.length }} of {{ tracks.length }} tracks
+    </p>
     <div style="margin-top: 2rem; text-align: center">
       <button
         v-if="tracks.length > 0"
         :disabled="tracks.length === pagedTracks.length"
         class="btn btn-success"
         @click="resultTake = resultTake + defaultTake"
-      >Show {{defaultTake > loadMore ? loadMore : defaultTake}} more tracks</button>
+      >
+        Show {{ defaultTake > loadMore ? loadMore : defaultTake }} more tracks
+      </button>
     </div>
   </div>
 </template>
@@ -277,7 +285,7 @@ export default {
       },
       accessToken: "",
       refreshToken: "",
-      selectedPlaylistId: "",
+      selectedPlaylist: "",
       playlists: [],
       genres: [],
       artistsSearch: [],
@@ -347,11 +355,11 @@ export default {
       this.searchInProgress = false;
     },
     async getPlaylistTracks() {
-      if (!this.selectedPlaylistId) return;
+      if (!this.selectedPlaylist) return;
       this.playlistTrackIds = (
         await SpotifyService.getPlaylistTracks(
           this.accessToken,
-          this.selectedPlaylistId
+          this.selectedPlaylist.id
         )
       ).map((t) => t.track.id);
     },
@@ -389,7 +397,7 @@ export default {
     },
     playlistAdded(playlist) {
       this.playlists.splice(0, 0, playlist);
-      this.selectedPlaylistId = this.playlists[0].id;
+      this.selectedPlaylist = this.playlists[0];
       this.addPlaylistModalVisible = false;
     },
     playlistTrackAdded(track) {

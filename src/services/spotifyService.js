@@ -162,7 +162,7 @@ export default class SpotifyService {
             return [];
         }
         if (seeds && seeds.length > 5) {
-            alert('You have to select too many seeds');
+            alert('You have selected too many seeds, you can only have a total of 5 seeds');
             return [];
         }
 
