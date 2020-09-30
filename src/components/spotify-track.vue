@@ -154,6 +154,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "../sass/_variables.scss";
+@import "../sass/_mixins.scss";
+
 .track {
   background: #fff;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 5px 0px;
@@ -173,11 +175,11 @@ export default {
     opacity: 0.7;
   }
 
-  @media only screen and (min-width: 767px) {
+  @include md {
     width: 47%;
   }
 
-  @media only screen and (min-width: 1024px) {
+  @include lg {
     width: 31%;
   }
 

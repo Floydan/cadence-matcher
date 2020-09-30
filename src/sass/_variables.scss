@@ -1,18 +1,63 @@
 /// The text color to be used when a background is determined to be "light"
-/// @type Color
+/// $type Color
 $dark-default: #111 !default;
 
 /// The text color to be used when a background is determined to be "dark"
-/// @type Color
+/// $type Color
 $light-default: #fff !default;
 
 /// The YIQ lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 & 255.
-/// @type Number
+/// $type Number
 $threshold-default: 148 !default;
 
 /// Toggle diagnostic messages.
-/// @type Boolean
+/// $type Boolean
 $yiq-debug: false !default;
 
 $green: #1ed760;
 $success: #1ed760;
+
+/// - Fonts -
+$baseFontSize: 16;
+
+/// - Container Width -
+$widthContainer: 1204px;
+
+/// - Text Sizes -
+$textSizeXSmall: (12 / $baseFontSize)+em; // 12px
+$textSizeSmall: (14 / $baseFontSize)+em; // 14px
+$textSizeMedium: (16 / $baseFontSize)+em; // 16px
+$textSizeLarge: (18 / $baseFontSize)+em; // 18px
+$textSizeXLarge: (20 / $baseFontSize)+em; // 20px
+
+/// - Space -
+$spaceDefault: (20 / $baseFontSize);
+$spaceXSmall: ($spaceDefault / 2)+em;
+$spaceSmall: ($spaceDefault / 1.5)+em;
+$spaceMedium: ($spaceDefault)+em;
+$spaceLarge: ($spaceDefault * 1.5)+em;
+$spaceXLarge: ($spaceDefault * 2)+em;
+
+$space: 1em;
+$space-and-half: $space*1.5;
+$space-double: $space*2;
+$space-triple: $space*3;
+$space-quad: $space*4;
+$space-half: $space/2;
+$space-quarter: $space/4;
+
+// - Breakpoint Widths -
+$widthXSmall: (420 / $baseFontSize);
+$widthSmall: (544 / $baseFontSize);
+$widthMedium: (768 / $baseFontSize);
+$widthLarge: (920 / $baseFontSize);
+$widthXLarge: (1200 / $baseFontSize);
+
+// - Breakpoint Media Queries -
+$bpXSmall: "only screen and (min-width: #{$widthXSmall}em), print";
+$bpSmall: "only screen and (min-width: #{$widthSmall}em), print";
+$bpMedium: "only screen and (min-width: #{$widthMedium}em), print";
+$bpLarge: "only screen and (min-width: #{$widthLarge}em), print";
+$bpXLarge: "only screen and (min-width: #{$widthXLarge}em)";
+
+$bpMediumMax: "only screen and (max-width: #{$widthMedium}em), print";

@@ -23,3 +23,46 @@
     background: $background;
     color: yiq-contrast-color($background, $dark, $light, $threshold);
 }
+
+@mixin xs() {
+
+    @media only screen and (min-width: #{$widthXSmall}em),
+    print {
+        @content;
+    }
+}
+
+@mixin sm() {
+
+    @media #{$bpXSmall} {
+        @content;
+    }
+}
+
+@mixin md() {
+
+    @media #{$bpMedium} {
+        @content;
+    }
+}
+
+@mixin lg() {
+
+    @media #{$bpLarge} {
+        @content;
+    }
+}
+
+@mixin xl() {
+
+    @media #{$bpXLarge} {
+        @content;
+    }
+}
+
+@mixin mdMax() {
+
+    @media #{$bpMediumMax} {
+        @content;
+    }
+}
