@@ -33,7 +33,7 @@
     "serve-favicon": "^2.5.0",
     "vue": "^2.6.12",
     "vue-multiselect": "^2.1.6",
-    "vue-router": "^3.4.5",
+    "vue-router": "^3.4.7",
     "vue-slider-component": "^3.2.5"
   },
   "devDependencies": {
