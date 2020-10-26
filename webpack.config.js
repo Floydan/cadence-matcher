@@ -6,17 +6,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = (env, argsv) => {
     const isDevelopment = argsv.mode !== 'production';
 
-    return {
+    const config = {
         entry: ['./src/main.js'],
         output: {
             filename: `assets/js/${isDevelopment ? '[name].js' : '[name].[contenthash].js'}`,
             chunkFilename: `assets/js/${isDevelopment ? '[id].js' : '[id].[contenthash].js'}`,
             path: path.resolve(__dirname, 'dist'),
         },
-        mode: argsv.mode !== 'production' ? 'development' : 'production',
-        devtool: argsv.mode !== 'production' ? 'source-map' : '',
+        mode: isDevelopment ? 'development' : 'production',
         optimization: {
-            moduleIds: 'hashed',
+            moduleIds: 'deterministic',
             runtimeChunk: 'single',
             splitChunks: {
                 cacheGroups: {
@@ -157,5 +156,11 @@ module.exports = (env, argsv) => {
                 vue: 'vue/dist/vue.js'
             },
         },
+    };
+
+    if (isDevelopment) {
+        config.devtool = 'eval-source-map';
     }
+
+    return config;
 };
