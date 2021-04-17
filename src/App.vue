@@ -6,7 +6,7 @@
       <router-view />
     </div>
     <footer>
-      <div class="container">&copy; Copyright Joakim Höglund {{year}}</div>
+      <div class="container">&copy; Copyright Joakim Höglund {{ year }}</div>
     </footer>
   </div>
 </template>

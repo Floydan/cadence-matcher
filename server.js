@@ -1,12 +1,8 @@
-const express = require('express'), // Express web server framework
-    request = require('request'), // "Request" library
-    cors = require('cors'),
+const ComfyWeb = require('webwebweb'), // Express web server framework
+    axios = require('axios'),
     querystring = require('querystring'),
-    cookieParser = require('cookie-parser'),
-    dotenv = require('dotenv'),
-    bodyParser = require('body-parser'),
-    favicon = require('serve-favicon'),
-    path = require('path');
+    dotenv = require('dotenv');
+
 dotenv.config();
 
 const port = process.env.PORT,
@@ -31,22 +27,15 @@ var generateRandomString = function (length) {
 
 var stateKey = 'spotify_auth_state';
 
-var app = express();
-
-app.use(express.static(__dirname + '/dist'))
-    .use(favicon(path.join(__dirname, 'dist', 'favicon.ico')))
-    .use(cors())
-    .use(bodyParser.json())
-    .use(cookieParser());
-
-app.get('/login', function (req, res) {
+ComfyWeb.APIs['login'] = (qs, body, opts) => {
 
     var state = generateRandomString(16);
-    res.cookie(stateKey, state);
+    opts.res.setHeader('Set-Cookie', `${stateKey}=${state}; SameSite=None; Secure`);
 
     // your application requests authorization
     var scope = 'user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public';
-    res.redirect('https://accounts.spotify.com/authorize?' +
+
+    redirect(opts.res, 'https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
             client_id: clientId,
@@ -54,177 +43,173 @@ app.get('/login', function (req, res) {
             redirect_uri: redirectUri,
             state: state
         }));
-});
+};
 
-app.get('/callback', function (req, res) {
+//login callback method
+ComfyWeb.APIs['callback'] = async (qs, body, opts) => {
 
-    // your application requests refresh and access tokens
-    // after checking the state parameter
-
-    let code = req.query.code || null;
-    let state = req.query.state || null;
-    let storedState = req.cookies ? req.cookies[stateKey] : null;
+    let code = qs.code || null;
+    let state = qs.state || null;
+    let storedState = opts.req.headers.cookie ? opts.req.headers.cookie.split('=')[1] : null;
 
     if (state === null || state !== storedState) {
-        res.redirect('/#' +
-            querystring.stringify({
+        redirect(opts.res, '/#' + querystring.stringify({
+            error: 'state_mismatch'
+        }));
+    } else {
+        opts.res.setHeader('Set-Cookie', `${stateKey}=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT`);
+        const auth = clientId + ':' + clientSecret;
+
+        var form = `code=${code}&redirect_uri=${redirectUri}&grant_type=authorization_code`;
+
+        try {
+
+            const response = await axios.post('https://accounts.spotify.com/api/token', form,
+                {
+                    headers: {
+                        'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
+                    }
+                });
+
+            if (response.status === 200) {
+                redirect(opts.res, `/#/?${querystring.stringify(response.data)}`);
+            } else {
+                redirect(opts.res, `/#/?${querystring.stringify({ error: 'invalid_token' })}`);
+            }
+        }
+        catch (e) {
+            opts.res.statusCode = 500;
+            redirect(opts.res, '/#' + querystring.stringify({
                 error: 'state_mismatch'
             }));
-    } else {
-        res.clearCookie(stateKey);
-        const auth = clientId + ':' + clientSecret;
-        const authOptions = {
-            url: 'https://accounts.spotify.com/api/token',
-            form: {
-                code: code,
-                redirect_uri: redirectUri,
-                grant_type: 'authorization_code'
-            },
-            headers: {
-                'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
-            },
-            json: true
-        };
-
-        request.post(authOptions, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-
-                const access_token = body.access_token,
-                    refresh_token = body.refresh_token;
-
-                const options = {
-                    url: 'https://api.spotify.com/v1/me',
-                    headers: {
-                        'Authorization': 'Bearer ' + access_token
-                    },
-                    json: true
-                };
-
-                // use the access token to access the Spotify Web API
-                // request.get(options, function (error, response, body) {
-
-                // });
-
-                // we can also pass the token to the browser to make requests from there
-                res.redirect('/#/?' +
-                    querystring.stringify({
-                        access_token: access_token,
-                        refresh_token: refresh_token
-                    }));
-            } else {
-                res.redirect('/#/?' +
-                    querystring.stringify({
-                        error: 'invalid_token'
-                    }));
-            }
-        });
+        }
     }
-});
+
+}
 
 //refresh access token
-app.get('/refresh_token', function (req, res) {
+ComfyWeb.APIs['refresh_token'] = async (qs, body, opts) => {
 
     // requesting access token from refresh token
-    const refresh_token = req.query.refresh_token;
+    const refresh_token = qs.refresh_token;
     const auth = clientId + ':' + clientSecret;
-    const authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        headers: {
-            'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
-        },
-        form: {
-            grant_type: 'refresh_token',
-            refresh_token: refresh_token
-        },
-        json: true
-    };
 
-    request.post(authOptions, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            const access_token = body.access_token;
-            let new_refresh_token = body.refresh_token;
+    const form = `grant_type=refresh_token&refresh_token${refresh_token}`;
+
+    try {
+
+        var response = await axios.post('https://accounts.spotify.com/api/token', form, {
+            headers: {
+                'Authorization': 'Basic ' + (Buffer.alloc(auth.length, auth).toString('base64'))
+            }
+        });
+        if (response.status === 200) {
+            const access_token = response.data.access_token;
+            let new_refresh_token = response.data.refresh_token;
             if (!new_refresh_token)
                 new_refresh_token = refresh_token;
-            res.send({
+
+            return {
                 'access_token': access_token,
                 'refresh_token': new_refresh_token
-            });
+            };
         }
-    });
-});
 
-app.get('/search', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    const type = req.query.type,
-        q = req.query.q,
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+};
+
+ComfyWeb.APIs['search'] = async (qs, body, opts) => {
+    const accessToken = opts.req.headers.accesstoken;
+    const type = qs.type,
+        q = qs.q,
         market = 'from_token';
 
     const query = { type, q, market };
 
-    var options = {
-        url: `https://api.spotify.com/v1/search?${querystring.stringify(query)}`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: true
-    };
-    request.get(options, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            res.send(body);
+    try {
+
+        const response = await axios.get(`https://api.spotify.com/v1/search?${querystring.stringify(query)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 200) {
+            return response.data;
         } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
+            opts.res.statusCode = 500;
+            return {
+                statusCode: response.status,
+                body: response.data
+            };
         }
-    })
-});
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+
+};
 
 //Get playlists
-app.get('/playlists', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    var options = {
-        url: `https://api.spotify.com/v1/me/playlists?${querystring.stringify({
+ComfyWeb.APIs['playlists'] = async (qs, body, opts) => {
+    const accessToken = opts.req.headers.accesstoken;
+
+    try {
+
+        const response = await axios.get(`https://api.spotify.com/v1/me/playlists?${querystring.stringify({
             limit: 30,
             offset: 0
-        })}`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: true
-    };
+        })}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
 
-    request.get(options, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            res.send(body);
+        if (response.status === 200) {
+            return response.data;
         } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
+            opts.res.statusCode = 500;
+            return {
+                statusCode: response.status,
+                body: response.data
+            };
         }
-    })
-});
+
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+};
 
 //Get recommendations
-app.get('/recommendations', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    const energy = req.query.energy,
-        acousticness = req.query.acousticness,
-        danceability = req.query.danceability,
-        instrumentalness = req.query.instrumentalness,
-        liveness = req.query.liveness,
-        valence = req.query.valence,
-        market = 'from_token';
-    const tempo = req.query.tempo;
-
-    let genres = req.query.genres; //|| 'edm,dance,techno,hardstyle'
-    let artists = req.query.artists;
-    let tracks = req.query.tracks;
+ComfyWeb.APIs['recommendations'] = async (qs, body, opts) => {
+    const accessToken = opts.req.headers.accesstoken;
+    const energy = qs['energy[]'],
+        acousticness = qs['acousticness[]'],
+        danceability = qs['danceability[]'],
+        instrumentalness = qs['instrumentalness[]'],
+        liveness = qs['liveness[]'],
+        valence = qs['valence[]'],
+        market = 'from_token',
+        tempo = qs["tempo[]"],
+        genres = [qs['genres[]']],
+        artists = [qs['artists[]']],
+        tracks = [qs['tracks[]']];
 
     let query = {
         limit: 100,
@@ -256,123 +241,123 @@ app.get('/recommendations', function (req, res) {
         query.seed_tracks = [...tracks].slice(0, 5).join(',');
     }
 
-    var options = {
-        url: `https://api.spotify.com/v1/recommendations?${querystring.stringify(query)}`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: true
-    };
+    try {
 
-    request.get(options, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            res.send(body);
+        const response = await axios.get(`https://api.spotify.com/v1/recommendations?${querystring.stringify(query)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 200) {
+            return response.data;
         } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
+            opts.res.statusCode = 500;
+            return {
+                statusCode: response.status,
+                body: response.data
+            };
         }
-    })
-});
 
-app.post('/playlists/add/:userid', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    const userId = req.params.userid,
-        name = req.body.name,
-        description = req.body.description,
-        public = req.body.public;
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+};
 
-    var options = {
-        url: `https://api.spotify.com/v1/users/${userId}/playlists `,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: {
+//create playlist
+ComfyWeb.APIs['playlists/add/*'] = async (qs, body, opts) => {
+    const accessToken = opts.req.headers.accesstoken;
+    body = JSON.parse(String.fromCharCode(...body));
+    const userId = opts.params[0],
+        name = body.name,
+        description = body.description,
+        public = body.public;
+
+    try {
+
+        const response = await axios.post(`https://api.spotify.com/v1/users/${userId}/playlists`, {
             name,
             description,
             public
-        }
-    };
+        }, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
 
-    request.post(options, function (error, response, body) {
-        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
-            res.send(body);
+        if ((response.status === 200 || response.status === 201)) {
+            return response.data;
         } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
+            opts.res.statusCode = 500;
+            return {
+                statusCode: response.status,
+                body: response.data
+            };
         }
-    })
 
-});
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+};
 
 // Add track to playlist
-app.post('/playlists/:id', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    const playlistId = req.params.id,
-        trackUri = req.body.trackUri;
+ComfyWeb.APIs['playlists/*'] = async (qs, body, opts) => {
+    const accessToken = opts.req.headers.accesstoken;
+    body = JSON.parse(String.fromCharCode(...body));
+    const playlistId = opts.params[0],
+        trackUri = body.trackUri;
 
-    var options = {
-        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?${querystring.stringify({
+    let url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+
+    if (opts.req.method === "POST") {
+        url += `?${querystring.stringify({
             uris: trackUri
-        })}`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: true
-    };
+        })}`;
+    }
 
-    request.post(options, function (error, response, body) {
-        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
-            res.send(body);
+    try {
+
+        const response = await axios.post(url, null, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 200 || response.status === 201) {
+            return response.data;
         } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
+            opts.res.statusCode = 500;
+            return {
+                statusCode: response.status,
+                body: response.data
+            };
         }
-    })
 
-});
+    }
+    catch (e) {
+        opts.res.statusCode = 500;
+        return {
+            statusCode: 500,
+            body: e
+        };
+    }
+};
 
-// Get playlist tracks
-app.get('/playlists/:id', function (req, res) {
-    const accessToken = req.headers.accesstoken;
-    const playlistId = req.params.id,
-        trackUri = req.body.trackUri;
+redirect = (res, url) => {
+    res.setHeader('Location', url);
+    res.statusCode = 302;
+}
 
-    var options = {
-        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?${querystring.stringify({
-            uris: trackUri
-        })}`,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-        json: true
-    };
-
-    request.get(options, function (error, response, body) {
-        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
-            res.send(body);
-        } else {
-            res.statusCode = 500;
-            res.send({
-                error: error,
-                statusCode: response.statusCode,
-                body: body
-            });
-        }
-    })
-
-});
 
 console.log(`Listening on ${port}`);
-app.listen(port);
+ComfyWeb.Run(port);

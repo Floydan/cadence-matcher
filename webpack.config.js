@@ -11,7 +11,7 @@ module.exports = (env, argsv) => {
         output: {
             filename: `assets/js/${isDevelopment ? '[name].js' : '[name].[contenthash].js'}`,
             chunkFilename: `assets/js/${isDevelopment ? '[id].js' : '[id].[contenthash].js'}`,
-            path: path.resolve(__dirname, 'dist'),
+            path: path.resolve(__dirname, 'public'),
         },
         mode: isDevelopment ? 'development' : 'production',
         optimization: {

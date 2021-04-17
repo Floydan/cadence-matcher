@@ -215,10 +215,6 @@
       @added:playlist="playlistAdded"
     ></add-playlist-modal>
 
-    <!-- <div class="mt-3 mb-3">
-      <button class="mt-3 mb-3" @click="testEvents">Alert</button>
-    </div>-->
-
     <div class="tracks">
       <spotify-track
         v-for="(track, i) in pagedTracks"
@@ -313,34 +309,6 @@ export default {
     alerts,
   },
   methods: {
-    //Test method for alerts
-    testEvents() {
-      const r = Math.random() + 1;
-      // GlobalEventsService.dispatch("alert:global", {
-      //   severity: "info",
-      //   message: `${r} - we did it!`,
-      // });
-      GlobalEventsService.dispatch("alert:home", {
-        severity: "success",
-        message: `${r} - we did it!`,
-        timeout: 20000,
-      });
-      GlobalEventsService.dispatch("alert:home", {
-        severity: "info",
-        message: `${r} - we did it!`,
-        timeout: 5000,
-      });
-      GlobalEventsService.dispatch("alert:home", {
-        severity: "warning",
-        message: `${r} - we did it!`,
-        timeout: 1000,
-      });
-      GlobalEventsService.dispatch("alert:home", {
-        severity: "danger",
-        message: `${r} - we did it! but with a longer text to cause a linebreak`,
-        timeout: 2000,
-      });
-    },
     async getRecommendations(button) {
       this.resultTake = this.defaultTake;
       this.searchInProgress = true;
@@ -476,7 +444,6 @@ export default {
     var params = Utilities.getHashParams();
     this.accessToken = params["/?access_token"];
     this.refreshToken = params.refresh_token;
-    const error = params.error;
 
     const tokens = StorageService.getTokens();
     if (!this.accessToken) {

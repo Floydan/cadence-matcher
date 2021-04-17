@@ -19,8 +19,7 @@
         <div class="p">
           For each tunable track attribute, a hard floor on the selected track attribute’s value can be provided.
           See tunable track attributes below for the list of available options. For example,
-          <pre>min_tempo=140</pre>would
-          restrict results to only those tracks with a tempo of greater than 140 beats per minute.
+          <pre>min_tempo=140</pre> would restrict results to only those tracks with a tempo of greater than 140 beats per minute.
         </div>
       </li>
       <li>
@@ -29,7 +28,7 @@
         <div class="p">
           For each tunable track attribute, a hard ceiling on the selected track attribute’s value can be provided.
           See tunable track attributes below for the list of available options. For example,
-          <pre>max_instrumentalness=0.35</pre>would filter out most tracks that are likely to be instrumental.
+          <pre>max_instrumentalness=0.35</pre> would filter out most tracks that are likely to be instrumental.
         </div>
       </li>
       <li>
@@ -39,8 +38,7 @@
           For each of the tunable track attributes (below) a target value may be provided.
           Tracks with the attribute values nearest to the target values will be preferred.
           For example, you might request
-          <pre>target_energy=0.6</pre>and
-          <pre>target_danceability=0.8</pre>.
+          <pre>target_energy=0.6</pre> and <pre>target_danceability=0.8</pre>.
           All target values will be weighed equally in ranking results.
         </div>
       </li>
@@ -54,10 +52,7 @@
         </p>
         <div class="p">
           Up to 5 seed values may be provided in any combination of
-          <pre>genres</pre>
-          <pre>artists</pre>,
-          and
-          <pre>tracks</pre>.
+          <pre>genres</pre> <pre>artists</pre>, and <pre>tracks</pre>.
         </div>
       </li>
     </ul>
@@ -132,10 +127,10 @@
     </p>
     <p>
       The progress button is based on the
-      <a
-        href="https://tympanus.net/Development/ProgressButtonStyles/"
-        target="_blank"
-      >https://tympanus.net/Development/ProgressButtonStyles/</a>
+      <a href="https://tympanus.net/Development/ProgressButtonStyles/"
+         target="_blank">
+         https://tympanus.net/Development/ProgressButtonStyles/
+      </a>
       <br />Which uses icons from
       <a href="https://icomoon.io/" target="_blank">https://icomoon.io/</a>
     </p>
